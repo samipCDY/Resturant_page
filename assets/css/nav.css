@@ -10,8 +10,7 @@
   border-bottom: 1px solid transparent;
   transition:
     background-color var(--dur-base) var(--ease-out),
-    border-color var(--dur-base) var(--ease-out),
-    transform var(--dur-slow) var(--ease-out);
+    border-color var(--dur-base) var(--ease-out);
 }
 
 .site-header.is-scrolled {
@@ -21,16 +20,11 @@
   backdrop-filter: blur(14px) saturate(1.2);
 }
 
-.site-header.is-hidden {
-  transform: translateY(-100%);
-}
-
 .site-header.is-menu-open {
   background-color: transparent;
   border-bottom-color: transparent;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-  transform: none;
 }
 
 .site-header__inner {
@@ -376,12 +370,6 @@
 
 /* ---- Reduced motion: no wipes, slides or rotation; keep short fades ------- */
 @media (prefers-reduced-motion: reduce) {
-  .site-header {
-    transition:
-      background-color var(--dur-base) var(--ease-out),
-      border-color var(--dur-base) var(--ease-out);
-  }
-
   .brand:hover .brand__mark {
     transform: none;
   }
@@ -404,4 +392,35 @@
   .mobile-menu.is-open .mobile-menu__footer {
     transition-delay: 0ms;
   }
+}
+
+/* ---- Large text settings (browser text size / zoom) ------------------------
+   The menu toggle must never be pushed off-screen: the brand shrinks (and
+   truncates) instead, and long mobile-menu words wrap.                      */
+.brand,
+.brand__text {
+  min-width: 0;
+}
+
+.brand__name,
+.brand__descriptor {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.brand__mark,
+.nav-toggle,
+.site-header__cta {
+  flex: none;
+}
+
+.mobile-menu__link span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.mobile-menu__details dd,
+.mobile-menu__details a {
+  overflow-wrap: anywhere;
 }

@@ -5,6 +5,8 @@ desktop.ini
 .vscode/
 .idea/
 
-# Logs & temp
+# Logs, temp, build output
 *.log
+*.tmp
 node_modules/
+release/

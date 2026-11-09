@@ -1,14 +1,24 @@
 /*!
  * Aurelia Dining — core/utils.js
  * Small, dependency-free helpers shared by every component.
+ * Everything here is safe to load outside a browser (tools/prerender.mjs).
  */
 (function (A) {
   "use strict";
 
-  var reducedQuery = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
+  var hasWindow = typeof window !== "undefined";
+  var reducedQuery = hasWindow && window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
   var priceFormatters = new Map();
+  var warned = {};
   var ESCAPES = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
   var UNSPLASH = /^https:\/\/images\.unsplash\.com\//;
+  var SAFE_SCHEME = /^(https?:|mailto:|tel:|sms:)/i;
+
+  function warnOnce(key, message) {
+    if (warned[key] || typeof console === "undefined") return;
+    warned[key] = true;
+    console.warn("[Aurelia] " + message);
+  }
 
   var utils = {
     qs: function (selector, root) {
@@ -32,15 +42,61 @@
       });
     },
 
-    /** Escape, then allow *word* → <em>word</em>. The only markup content may use. */
-    inlineMarkup: function (value) {
-      return utils.escapeHtml(value).replace(/\*([^*]+)\*/g, "<em>$1</em>");
+    /**
+     * Brand tokens usable in any content string, so renaming the restaurant in
+     * one place updates every sentence:  {name} {descriptor} {fullName}
+     * {phone} {email} {established}
+     */
+    fill: function (value, content) {
+      var c = content || (hasWindow && window.AURELIA_CONTENT) || {};
+      var brand = c.brand || {};
+      var contact = c.contact || {};
+      var tokens = {
+        name: brand.name || "",
+        descriptor: brand.descriptor || "",
+        fullName: [brand.name, brand.descriptor].filter(Boolean).join(" "),
+        phone: contact.phone || "",
+        email: contact.email || "",
+        established: brand.established || ""
+      };
+      return String(value == null ? "" : value).replace(/\{(\w+)\}/g, function (match, key) {
+        return Object.prototype.hasOwnProperty.call(tokens, key) ? tokens[key] : match;
+      });
     },
 
-    /** Refuse script URLs; everything else (#hash, /path, https:, tel:, mailto:) passes. */
+    /** Escaped text with brand tokens filled in. */
+    text: function (value, content) {
+      return utils.escapeHtml(utils.fill(value, content));
+    },
+
+    /** Escape, then allow *word* → <em>word</em>. The only markup content may use. */
+    inlineMarkup: function (value, content) {
+      return utils.text(value, content).replace(/\*([^*]+)\*/g, "<em>$1</em>");
+    },
+
+    /**
+     * Allow relative URLs, #hashes and http(s)/mailto/tel/sms only.
+     * Returns "" for anything else (javascript:, data:, vbscript:, …).
+     */
     safeHref: function (value) {
       var href = String(value == null ? "" : value).trim();
-      return /^(javascript|data|vbscript):/i.test(href.replace(/[\s\u0000-\u001f]/g, "")) ? "#" : href;
+      if (!href) return "";
+      var compact = href.replace(/[\s\u0000-\u001f]/g, "");
+      var scheme = compact.match(/^([a-z][a-z0-9+.-]*):/i);
+      if (scheme && !SAFE_SCHEME.test(compact)) return "";
+      return href;
+    },
+
+    /** Form endpoints must be https (http only for localhost testing). */
+    isSafeEndpoint: function (value) {
+      if (typeof value !== "string" || !value.trim()) return false;
+      try {
+        var url = new URL(value.trim());
+        if (url.protocol === "https:") return true;
+        return url.protocol === "http:" && /^(localhost|127\.0\.0\.1|\[::1\])$/.test(url.hostname);
+      } catch (err) {
+        return false;
+      }
     },
 
     mod: function (n, m) {
@@ -62,29 +118,75 @@
       else if (reducedQuery.addListener) reducedQuery.addListener(handler);
     },
 
-    /** Format numbers with Intl currency rules; strings pass through untouched. */
+    /**
+     * Format a price. Numbers use Intl currency rules from `settings`; strings
+     * ("Market price") pass through. Never throws: invalid decimals fall back
+     * to the currency's default, an invalid locale to en-US, and an invalid
+     * currency to a plain number.
+     */
     formatPrice: function (value, settings) {
       if (value == null || value === "") return "";
       if (typeof value !== "number" || !isFinite(value)) return String(value);
       var s = settings || {};
-      var locale = s.locale || "en-US";
-      var currency = s.currency || "USD";
-      var digits = typeof s.priceDecimals === "number" ? s.priceDecimals : 0;
-      var key = locale + "|" + currency + "|" + digits;
+      var digits = s.priceDecimals;
+      var validDigits = typeof digits === "number" && digits >= 0 && digits <= 4 && Math.floor(digits) === digits;
+      if (digits != null && !validDigits) warnOnce("digits", "settings.priceDecimals must be a whole number from 0 to 4; using the currency default.");
+      var locale = typeof s.locale === "string" && s.locale.trim() ? s.locale.trim() : "en-US";
+      var currency = typeof s.currency === "string" && s.currency.trim() ? s.currency.trim().toUpperCase() : "USD";
+      var key = locale + "|" + currency + "|" + (validDigits ? digits : "auto");
+
       if (!priceFormatters.has(key)) {
-        try {
-          priceFormatters.set(key, new Intl.NumberFormat(locale, {
-            style: "currency",
-            currency: currency,
-            minimumFractionDigits: digits,
-            maximumFractionDigits: digits
-          }));
-        } catch (err) {
-          priceFormatters.set(key, null);
+        var options = { style: "currency", currency: currency };
+        if (validDigits) {
+          options.minimumFractionDigits = digits;
+          options.maximumFractionDigits = digits;
         }
+        var formatter = null;
+        var attempts = [locale, "en-US"];
+        for (var i = 0; i < attempts.length && !formatter; i++) {
+          try { formatter = new Intl.NumberFormat(attempts[i], options); } catch (err) { formatter = null; }
+        }
+        if (!formatter) {
+          warnOnce("currency", 'settings.currency "' + currency + '" is not a valid ISO 4217 code; prices are shown without a currency symbol.');
+          var plain = {};
+          if (validDigits) { plain.minimumFractionDigits = digits; plain.maximumFractionDigits = digits; }
+          try { formatter = new Intl.NumberFormat(locale, plain); } catch (err) { formatter = new Intl.NumberFormat("en-US", plain); }
+        } else if (formatter.resolvedOptions().locale && attempts[0] !== "en-US" && !safeLocale(locale)) {
+          warnOnce("locale", 'settings.locale "' + locale + '" is not supported; using en-US.');
+        }
+        priceFormatters.set(key, formatter);
       }
-      var formatter = priceFormatters.get(key);
-      return formatter ? formatter.format(value) : currency + " " + value.toFixed(digits);
+      return priceFormatters.get(key).format(value);
+    },
+
+    /** Format "17:30" for display using the configured locale. */
+    formatTime: function (value, settings) {
+      var m = /^(\d{1,2}):(\d{2})$/.exec(String(value || ""));
+      if (!m) return String(value || "");
+      var date = new Date(2000, 0, 1, Number(m[1]), Number(m[2]));
+      var locale = (settings && settings.locale) || "en-US";
+      try {
+        return new Intl.DateTimeFormat(locale, { hour: "numeric", minute: "2-digit" }).format(date);
+      } catch (err) {
+        return new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(date);
+      }
+    },
+
+    /** Address lines for display: ["218 Linden Row", "Portland, OR 97204"]. */
+    addressLines: function (address) {
+      var a = address || {};
+      var cityLine = [a.locality, [a.region, a.postalCode].filter(Boolean).join(" ")].filter(Boolean).join(", ");
+      return [a.street, a.district, cityLine].filter(Boolean);
+    },
+
+    /** Directions link: explicit contact.mapUrl, otherwise an OpenStreetMap search. */
+    mapUrl: function (contact) {
+      var c = contact || {};
+      var explicit = utils.safeHref(c.mapUrl);
+      if (explicit) return explicit;
+      var a = c.address || {};
+      var query = [a.street, a.locality, a.region, a.postalCode, a.country].filter(Boolean).join(", ");
+      return query ? "https://www.openstreetmap.org/search?query=" + encodeURIComponent(query) : "";
     },
 
     /** Build a sized URL for Unsplash images; other sources are returned unchanged. */
@@ -98,6 +200,7 @@
         url.searchParams.set("fit", "crop");
         url.searchParams.set("w", String(width));
         if (aspect) url.searchParams.set("h", String(Math.round(width / aspect)));
+        else url.searchParams.delete("h");
         if (!url.searchParams.has("q")) url.searchParams.set("q", "70");
         return url.toString();
       } catch (err) {
@@ -115,9 +218,31 @@
     },
 
     /**
-     * Create an <img> with responsive sources.
-     * opts: { widths, aspect, sizes, width, height, lazy, alt, className }
+     * <img> markup as a string (renderers + prerender tool).
+     * opts: { widths, aspect, sizes, width, height, eager, alt, className }
      */
+    imgTag: function (image, opts) {
+      var o = opts || {};
+      if (!image || !image.src) return "";
+      var esc = utils.escapeHtml;
+      var srcset = utils.imageSrcset(image, o.widths, o.aspect);
+      var widest = o.widths ? o.widths[o.widths.length - 1] : 0;
+      var width = o.width || widest || 1200;
+      var height = o.height || (o.aspect ? Math.round(width / o.aspect) : Math.round(width * 0.66));
+      var alt = o.alt != null ? o.alt : image.alt || "";
+      return (
+        "<img" +
+        (o.className ? ' class="' + esc(o.className) + '"' : "") +
+        ' src="' + esc(utils.imageUrl(image, widest, o.aspect)) + '"' +
+        (srcset ? ' srcset="' + esc(srcset) + '" sizes="' + esc(o.sizes || "100vw") + '"' : "") +
+        ' width="' + width + '" height="' + height + '"' +
+        ' alt="' + esc(alt) + '"' +
+        (o.eager ? "" : ' loading="lazy"') +
+        ' decoding="async">'
+      );
+    },
+
+    /** Create an <img> element with responsive sources (runtime only). */
     createImage: function (image, opts) {
       var o = opts || {};
       var img = document.createElement("img");
@@ -153,5 +278,13 @@
     }
   };
 
+  function safeLocale(locale) {
+    try {
+      return Intl.NumberFormat.supportedLocalesOf([locale]).length > 0;
+    } catch (err) {
+      return false;
+    }
+  }
+
   A.utils = utils;
-})(window.Aurelia = window.Aurelia || {});
+})(typeof window !== "undefined" ? (window.Aurelia = window.Aurelia || {}) : (globalThis.Aurelia = globalThis.Aurelia || {}));

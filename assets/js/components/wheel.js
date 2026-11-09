@@ -17,17 +17,24 @@
   var DRAG_THRESHOLD = 8;        // px before a press becomes a drag
   var FLICK_FRACTION = 0.15;     // of one step: a short flick still advances
   var ACTIVE_SCALE = 1.2;        // must match .is-active .dish-wheel__plate in wheel.css
+  var VISIBLE_RATIO = 0.35;      // autoplay only while this much of the stage is on screen
+  var PLATE_WIDTHS = [240, 360, 480, 640]; // enough for 3× screens at the largest plate
 
   /**
-   * `sizes` for plate images = the ACTIVE plate's rendered width, derived from
-   * the stage widths in wheel.css (26rem mobile, 32rem ≥40em, 38rem ≥60em).
-   * Mobile stages can be narrower than 26rem, hence the vw cap.
+   * `sizes` = the ACTIVE plate's rendered width, derived from the real stage
+   * width in wheel.css, including container gutters and the desktop grid:
+   *   < 40em : stage = min(26rem, container)  container ≈ 96vw − 1.2rem
+   *   ≥ 40em : stage = 32rem
+   *   ≥ 60em : stage = min(38rem, grid column) column ≈ 48.08vw − 0.634rem
+   * Math functions in `sizes` are widely supported; if a browser ignores an
+   * entry it falls back to the largest candidate (640w), which is still small.
    */
   function plateSizes(ratio) {
     var f = ratio * ACTIVE_SCALE;
-    var rem = function (stage) { return (stage * f).toFixed(2) + "rem"; };
-    return "(min-width: 60em) " + rem(38) + ", (min-width: 40em) " + rem(32) +
-      ", min(" + rem(26) + ", " + (100 * f).toFixed(1) + "vw)";
+    var n = function (v) { return (v * f).toFixed(2); };
+    return "(min-width: 60em) min(" + n(38) + "rem, calc(" + n(48.08) + "vw - " + n(0.634) + "rem)), " +
+      "(min-width: 40em) " + n(32) + "rem, " +
+      "min(" + n(26) + "rem, calc(" + n(96) + "vw - " + n(1.2) + "rem))";
   }
 
   function DishWheel(root, config, settings) {
@@ -107,7 +114,7 @@
       plate.setAttribute("data-initial", dish.name.trim().charAt(0));
 
       var img = utils.createImage(dish.image, {
-        widths: [200, 320, 480],
+        widths: PLATE_WIDTHS,
         aspect: 1,
         sizes: sizes,
         width: 480,
@@ -304,6 +311,10 @@
 
     stage.addEventListener("pointerdown", function (event) {
       if (event.pointerType === "mouse" && event.button !== 0) return;
+      // One pointer at a time: a second finger (non-primary) or any pointer
+      // arriving during an active drag is ignored, so it can never orphan the
+      // drag that owns `is-dragging` and the autoplay "drag" hold.
+      if (!event.isPrimary || (self.drag && self.drag.active)) return;
       self.drag = {
         id: event.pointerId,
         type: event.pointerType,
@@ -375,6 +386,17 @@
 
     stage.addEventListener("pointerup", function (event) { end(event, false); });
     stage.addEventListener("pointercancel", function (event) { end(event, true); });
+    // Capture lost without a pointerup (element removed, OS gesture, devtools…)
+    // (lostpointercapture bubbles: a child losing its implicit touch capture to the
+    // stage must not cancel the drag, so only the stage's own loss counts.)
+    stage.addEventListener("lostpointercapture", function (event) {
+      if (event.target === stage) end(event, true);
+    });
+    // Window loses focus mid-drag (alt-tab, notification): snap back cleanly.
+    window.addEventListener("blur", function () {
+      if (self.drag && self.drag.active) end({ pointerId: self.drag.id }, true);
+      else self.drag = null;
+    });
   };
 
   /* ------------------------------------------------------------------------ */
@@ -407,17 +429,32 @@
     if ("IntersectionObserver" in window) {
       this.suspended.offscreen = true; // the observer reports the real state immediately
       new IntersectionObserver(function (entries) {
-        if (entries[0].isIntersecting) self.resume("offscreen");
+        var entry = entries[entries.length - 1];
+        // isIntersecting alone is true for a 1px sliver, so enforce the ratio.
+        // A stage taller than the viewport (zoom) counts once it fills 60% of it.
+        var rootHeight = entry.rootBounds ? entry.rootBounds.height : window.innerHeight;
+        var visible = entry.isIntersecting &&
+          (entry.intersectionRatio >= VISIBLE_RATIO || entry.intersectionRect.height >= rootHeight * 0.6);
+        if (visible) self.resume("offscreen");
         else self.suspend("offscreen");
-      }, { threshold: 0.35 }).observe(this.el.stage);
+      }, { threshold: [0, 0.1, 0.2, VISIBLE_RATIO, 0.5, 0.75, 1] }).observe(this.el.stage);
     }
 
-    // Keyboard focus entering the carousel stops rotation until play is pressed.
+    // Focus rules (WCAG 2.2.2):
+    //  - keyboard focus entering the carousel stops rotation;
+    //  - keyboard focus moving to any control other than Play stops it;
+    //  - focus reaching a dish panel (keyboard or click) always stops it, so a
+    //    panel being read is never rotated away or made inert;
+    //  - pressing Play is the explicit way to restart, even with focus inside.
     root.addEventListener("focusin", function (event) {
-      if (event.relatedTarget && root.contains(event.relatedTarget)) return;
+      if (!self.playing) return;
+      var target = event.target;
+      var fromOutside = !(event.relatedTarget && root.contains(event.relatedTarget));
+      var inPanel = self.el.panels.contains(target);
       var keyboard = true;
-      try { keyboard = event.target.matches(":focus-visible"); } catch (err) { /* old browser */ }
-      if (keyboard) self.setPlaying(false);
+      try { keyboard = target.matches(":focus-visible"); } catch (err) { /* old browser */ }
+      if (target === play && !fromOutside) return;
+      if (inPanel || keyboard) self.setPlaying(false);
     });
 
     utils.onReducedMotionChange(function (reduced) {
@@ -472,6 +509,11 @@
     }
 
     this.timer = window.setTimeout(function () {
+      // Safety net: never rotate away a panel that currently holds focus.
+      if (self.el.panels.contains(document.activeElement)) {
+        self.setPlaying(false);
+        return;
+      }
       self.goTo(self.index + 1, {});
       self.schedule();
     }, this.interval);

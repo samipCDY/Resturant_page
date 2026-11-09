@@ -1,0 +1,108 @@
+==============================================================================
+ AURELIA DINING — WEBSITE TEMPLATE LICENCE
+ *** DRAFT FOR SELLER REVIEW — NOT LEGAL ADVICE ***
+==============================================================================
+
+This draft was prepared as a starting point. Items in [SELLER DECISION: …]
+must be decided by the seller (and ideally reviewed by a lawyer in the
+seller's jurisdiction) before the template is sold. Delete this header and
+every bracketed note once finalised.
+
+------------------------------------------------------------------------------
+Licensor:  [SELLER DECISION: legal name of the seller / TokaMD business entity]
+Product:   Aurelia Dining website template, version 1.0.0 ("the Template")
+Licensee:  the person or organisation that purchased a licence ("you")
+------------------------------------------------------------------------------
+
+1. WHAT THE TEMPLATE INCLUDES
+   The HTML, CSS and JavaScript source code, original icons, monogram,
+   favicon, documentation and the optional tools/prerender.mjs script.
+
+   NOT INCLUDED and NOT LICENSED BY THIS LICENCE (see section 6):
+   demonstration photographs, third-party fonts, and the fictional demo
+   content (names, reviews, prices, addresses, chef persona).
+
+2. LICENCE GRANT
+   On purchase you receive a non-exclusive, non-transferable, worldwide
+   licence to use and modify the Template to create websites, as follows:
+
+   [SELLER DECISION: choose the licence tiers you will sell, for example:]
+   a) Single-site licence: one website for yourself or one client.
+   b) Multi-site / agency licence: up to [N] websites, or unlimited client
+      websites.
+   [SELLER DECISION: whether a finished client website may be handed over to
+    (and owned by) the client, which is normally yes for agency use.]
+
+3. MODIFICATIONS
+   You may modify, adapt, translate and combine the Template with other
+   work for the permitted websites. Modified versions remain subject to this
+   licence.
+
+4. RESTRICTIONS. You may NOT:
+   a) resell, sublicense, share, give away or redistribute the Template, or
+      a modified version of it, as a template, theme, starter kit, UI kit
+      or similar product, whether free or paid;
+   b) include the Template in a website builder, template marketplace,
+      "done-for-you" generator or any product whose purpose is to let
+      others create websites from it;
+   c) claim the Template's design or code as your own original template
+      product;
+   d) remove this licence from the source files you distribute to clients
+      [SELLER DECISION: or allow removal for client hand-over];
+   e) use the Template in unlawful, defamatory or misleading websites,
+      including presenting the fictional demo content as real.
+
+5. OWNERSHIP
+   The Licensor keeps all rights, title and intellectual property in the
+   Template. Your website content (text, photos, logos, menu) remains yours.
+
+6. THIRD-PARTY ASSETS: EXCLUDED
+   a) Demonstration photographs are hotlinked from Unsplash for preview only.
+      They are not part of the product, are not licensed to you by the
+      Licensor, and must be replaced before launch. Any use of Unsplash
+      images is governed solely by the Unsplash License
+      (https://unsplash.com/license) between you and Unsplash.
+   b) Fonts (Cormorant Garamond, Manrope) are licensed by their authors
+      under the SIL Open Font License 1.1, not by the Licensor.
+   c) Any form-handling service you connect is governed by that service's
+      own terms. You are responsible for its configuration, privacy notices,
+      data storage and server-side validation.
+   d) Photographs of people in the demo are stock imagery. The chef persona
+      is fictional and must not be presented as a real person.
+
+7. SUPPORT AND UPDATES
+   [SELLER DECISION: fill in, for example:]
+   - Support channel: [email / Discord / Whop messages]
+   - Scope: help with installing and using the Template as shipped, and bug
+     fixes. NOT included: custom design or development work, third-party
+     services, hosting, or problems caused by your modifications.
+   - Response time: [e.g. within 2 business days]
+   - Updates: free updates within the 1.x version line for [e.g. 12 months /
+     the lifetime of the product]. Major versions may be a paid upgrade.
+
+8. REFUNDS
+   [SELLER DECISION: refund policy consistent with Whop's rules and your
+    local consumer-protection law, for digital goods.]
+
+9. NO WARRANTY
+   THE TEMPLATE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING FITNESS FOR A PARTICULAR PURPOSE, ACCESSIBILITY OR LEGAL
+   COMPLIANCE OF THE WEBSITES YOU BUILD. You are responsible for your own
+   content, accessibility testing, privacy compliance and the accuracy of
+   your restaurant's information (hours, prices, allergens).
+
+10. LIMITATION OF LIABILITY
+   TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE LICENSOR'S TOTAL LIABILITY IS
+   LIMITED TO THE PRICE YOU PAID FOR THE LICENCE.
+   [SELLER DECISION: confirm this is enforceable where you sell.]
+
+11. TERMINATION
+   This licence ends automatically if you breach it. On termination you must
+   stop using the Template in new projects. [SELLER DECISION: whether
+   websites already launched may remain online.]
+
+12. GOVERNING LAW
+   [SELLER DECISION: jurisdiction / governing law.]
+
+Copyright (c) 2026 [SELLER DECISION: copyright holder name]. All rights
+reserved except as granted above.

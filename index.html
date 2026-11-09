@@ -8,11 +8,69 @@
   <meta name="theme-color" content="#141312">
   <meta name="color-scheme" content="dark">
 
+  <!-- Social previews. Canonical URL + og:url are added from content.js → site.url (see DEPLOYMENT.md). -->
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Aurelia Dining">
   <meta property="og:title" content="Aurelia Dining — Modern European Restaurant">
-  <meta property="og:description" content="Seasonal tasting menus, open-fire cooking and a candlelit room on the river.">
+  <meta property="og:description" content="Aurelia Dining is a modern European restaurant serving seasonal tasting menus, open-fire signature plates and an intimate candlelit dining room.">
   <meta property="og:image" content="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;w=1200&amp;h=630&amp;q=70">
+  <meta property="og:image:alt" content="A plated dish being served at a candlelit table">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Aurelia Dining — Modern European Restaurant">
+  <meta name="twitter:description" content="Aurelia Dining is a modern European restaurant serving seasonal tasting menus, open-fire signature plates and an intimate candlelit dining room.">
+  <meta name="twitter:image" content="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;w=1200&amp;h=630&amp;q=70">
+  <script type="application/ld+json" data-jsonld>{
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "name": "Aurelia Dining",
+  "description": "Aurelia Dining is a modern European restaurant serving seasonal tasting menus, open-fire signature plates and an intimate candlelit dining room.",
+  "servesCuisine": [
+    "Modern European",
+    "Seasonal"
+  ],
+  "priceRange": "$$$",
+  "telephone": "+1 (503) 555-0142",
+  "email": "reservations@aurelia.example",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "218 Linden Row",
+    "addressLocality": "Portland",
+    "addressRegion": "OR",
+    "postalCode": "97204",
+    "addressCountry": "US"
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Tuesday",
+        "Wednesday",
+        "Thursday"
+      ],
+      "opens": "17:30",
+      "closes": "22:30"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Friday",
+        "Saturday"
+      ],
+      "opens": "17:30",
+      "closes": "23:30"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Sunday"
+      ],
+      "opens": "17:00",
+      "closes": "22:00"
+    }
+  ],
+  "acceptsReservations": true,
+  "image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=70"
+}</script>
 
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 
@@ -30,20 +88,25 @@
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/nav.css">
   <link rel="stylesheet" href="assets/css/hero.css">
-  <link rel="stylesheet" href="assets/css/wheel.css">
   <link rel="stylesheet" href="assets/css/sections.css">
+  <link rel="stylesheet" href="assets/css/wheel.css">
+  <link rel="stylesheet" href="assets/css/menu.css">
 
-  <!-- Content first, then helpers, components, and boot. All deferred: order is preserved, rendering is never blocked. -->
+  <!-- Content first, then helpers, components and boot. All deferred: order is preserved, rendering is never blocked. -->
   <script src="assets/js/content.js" defer></script>
   <script src="assets/js/core/utils.js" defer></script>
+  <script src="assets/js/core/render.js" defer></script>
   <script src="assets/js/core/bind.js" defer></script>
+  <script src="assets/js/core/seo.js" defer></script>
   <script src="assets/js/core/reveal.js" defer></script>
+  <script src="assets/js/components/sections.js" defer></script>
+  <script src="assets/js/components/wheel.js" defer></script>
+  <script src="assets/js/components/menu.js" defer></script>
   <script src="assets/js/components/nav.js" defer></script>
   <script src="assets/js/components/hero.js" defer></script>
-  <script src="assets/js/components/wheel.js" defer></script>
   <script src="assets/js/main.js" defer></script>
 </head>
-<body>
+<body data-page="home">
   <!-- SVG sprite: original icons for this template -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
     <symbol id="icon-monogram" viewBox="0 0 48 48">
@@ -56,14 +119,20 @@
     <symbol id="icon-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
     <symbol id="icon-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
     <symbol id="icon-pause" viewBox="0 0 24 24"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="icon-phone" viewBox="0 0 24 24"><path d="M5.5 4h3l1.5 4-2 1.3a11 11 0 0 0 6.7 6.7L16 14l4 1.5v3a1.5 1.5 0 0 1-1.5 1.5A15.5 15.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4z"/></symbol>
+    <symbol id="icon-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="m3.5 6.5 8.5 6 8.5-6"/></symbol>
+    <symbol id="icon-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+    <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></symbol>
+    <symbol id="icon-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/></symbol>
   </svg>
 
   <a class="skip-link" href="#main">Skip to main content</a>
 
-  <!-- ===================================================== Header -->
+  <!-- ===================================================== Header (identical on every page) -->
   <header class="site-header" data-header>
     <div class="site-header__inner container">
-      <a class="brand" href="#top">
+      <a class="brand" href="index.html" aria-current="page">
         <svg class="brand__mark" aria-hidden="true" focusable="false"><use href="#icon-monogram"></use></svg>
         <span class="brand__text">
           <span class="brand__name" data-bind="brand.name">Aurelia</span>
@@ -72,17 +141,10 @@
       </a>
 
       <nav class="site-nav" aria-label="Primary">
-        <ul class="site-nav__list" role="list" data-render="nav" data-variant="desktop">
-          <li><a class="site-nav__link" href="#about" data-nav-link>About</a></li>
-          <li><a class="site-nav__link" href="#signature" data-nav-link>Signature</a></li>
-          <li><a class="site-nav__link" href="#menu" data-nav-link>Menu</a></li>
-          <li><a class="site-nav__link" href="#chef" data-nav-link>Chef</a></li>
-          <li><a class="site-nav__link" href="#gallery" data-nav-link>Gallery</a></li>
-          <li><a class="site-nav__link" href="#contact" data-nav-link>Contact</a></li>
-        </ul>
+        <ul class="site-nav__list" role="list" data-render="nav" data-variant="desktop"><!--r--><li><a class="site-nav__link" href="about.html" data-nav-link>About</a></li><li><a class="site-nav__link" href="signature.html" data-nav-link>Signature</a></li><li><a class="site-nav__link" href="menu.html" data-nav-link>Menu</a></li><li><a class="site-nav__link" href="chef.html" data-nav-link>Chef</a></li><li><a class="site-nav__link" href="gallery.html" data-nav-link>Gallery</a></li><li><a class="site-nav__link" href="contact.html" data-nav-link>Contact</a></li><!--/r--></ul>
       </nav>
 
-      <a class="btn btn--primary btn--sm site-header__cta" href="#reservations" data-bind="navCta.label" data-bind-href="navCta.href">Reserve</a>
+      <a class="btn btn--primary btn--sm site-header__cta" href="reservations.html" data-nav-cta data-bind="navCta.label" data-bind-href="navCta.href">Reserve</a>
 
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" data-nav-toggle>
         <span class="visually-hidden">Menu</span>
@@ -94,27 +156,20 @@
   <!-- Mobile menu: sibling of the header (not inside it) so position:fixed is relative to the viewport -->
   <div class="mobile-menu" id="mobile-menu" data-mobile-menu>
     <nav aria-label="Mobile">
-      <ul class="mobile-menu__list" role="list" data-render="nav" data-variant="mobile">
-        <li class="mobile-menu__item" style="--i:0"><a class="mobile-menu__link" href="#about" data-nav-link><span class="mobile-menu__num" aria-hidden="true">01</span><span>About</span></a></li>
-        <li class="mobile-menu__item" style="--i:1"><a class="mobile-menu__link" href="#signature" data-nav-link><span class="mobile-menu__num" aria-hidden="true">02</span><span>Signature</span></a></li>
-        <li class="mobile-menu__item" style="--i:2"><a class="mobile-menu__link" href="#menu" data-nav-link><span class="mobile-menu__num" aria-hidden="true">03</span><span>Menu</span></a></li>
-        <li class="mobile-menu__item" style="--i:3"><a class="mobile-menu__link" href="#chef" data-nav-link><span class="mobile-menu__num" aria-hidden="true">04</span><span>Chef</span></a></li>
-        <li class="mobile-menu__item" style="--i:4"><a class="mobile-menu__link" href="#gallery" data-nav-link><span class="mobile-menu__num" aria-hidden="true">05</span><span>Gallery</span></a></li>
-        <li class="mobile-menu__item" style="--i:5"><a class="mobile-menu__link" href="#contact" data-nav-link><span class="mobile-menu__num" aria-hidden="true">06</span><span>Contact</span></a></li>
-      </ul>
+      <ul class="mobile-menu__list" role="list" data-render="nav" data-variant="mobile"><!--r--><li class="mobile-menu__item" style="--i:0"><a class="mobile-menu__link is-active" href="index.html" data-nav-link aria-current="page"><span class="mobile-menu__num" aria-hidden="true">01</span><span>Home</span></a></li><li class="mobile-menu__item" style="--i:1"><a class="mobile-menu__link" href="about.html" data-nav-link><span class="mobile-menu__num" aria-hidden="true">02</span><span>About</span></a></li><li class="mobile-menu__item" style="--i:2"><a class="mobile-menu__link" href="signature.html" data-nav-link><span class="mobile-menu__num" aria-hidden="true">03</span><span>Signature</span></a></li><li class="mobile-menu__item" style="--i:3"><a class="mobile-menu__link" href="menu.html" data-nav-link><span class="mobile-menu__num" aria-hidden="true">04</span><span>Menu</span></a></li><li class="mobile-menu__item" style="--i:4"><a class="mobile-menu__link" href="chef.html" data-nav-link><span class="mobile-menu__num" aria-hidden="true">05</span><span>Chef</span></a></li><li class="mobile-menu__item" style="--i:5"><a class="mobile-menu__link" href="gallery.html" data-nav-link><span class="mobile-menu__num" aria-hidden="true">06</span><span>Gallery</span></a></li><li class="mobile-menu__item" style="--i:6"><a class="mobile-menu__link" href="contact.html" data-nav-link><span class="mobile-menu__num" aria-hidden="true">07</span><span>Contact</span></a></li><!--/r--></ul>
     </nav>
     <div class="mobile-menu__footer">
       <dl class="mobile-menu__details">
         <div>
           <dt>Reservations</dt>
-          <dd><a href="tel:+15550142290" data-bind="contact.phone" data-bind-href="contact.phoneHref">+1 (555) 014-2290</a></dd>
+          <dd><a href="tel:+15035550142" data-bind="contact.phone" data-bind-href="contact.phoneHref">+1 (503) 555-0142</a></dd>
         </div>
         <div>
           <dt>Dinner</dt>
-          <dd data-bind="hours.summary">Tue – Sun · 5:30 – 11 pm</dd>
+          <dd data-bind="hours.summary">Tue – Sun · from 5 pm</dd>
         </div>
       </dl>
-      <a class="btn btn--primary" href="#reservations" data-bind-href="navCta.href">Reserve a table</a>
+      <a class="btn btn--primary" href="reservations.html" data-bind-href="navCta.href">Reserve a table</a>
     </div>
   </div>
 
@@ -138,26 +193,18 @@
 
       <div class="hero__content container">
         <p class="eyebrow" data-hero-fade style="--d:0" data-bind="hero.eyebrow">Modern European · Est. 2014</p>
-        <h1 class="hero__title" id="hero-title" data-hero-title>
-          <span class="line"><span class="line__inner" style="--i:0">Where every</span></span>
-          <span class="line"><span class="line__inner" style="--i:1"><em>plate</em> tells</span></span>
-          <span class="line"><span class="line__inner" style="--i:2">a quiet story.</span></span>
-        </h1>
+        <h1 class="hero__title" id="hero-title" data-render="title-lines" data-path="hero.titleLines"><!--r--><span class="line"><span class="line__inner" style="--i:0">Where every</span></span> <span class="line"><span class="line__inner" style="--i:1"><em>plate</em> tells</span></span> <span class="line"><span class="line__inner" style="--i:2">a quiet story.</span></span><!--/r--></h1>
         <p class="hero__lead" data-hero-fade style="--d:1" data-bind="hero.lead">Seasonal tasting menus, open-fire cooking and a candlelit room on the river. An evening at Aurelia moves at the pace of good conversation.</p>
         <div class="hero__actions" data-hero-fade style="--d:2">
-          <a class="btn btn--primary" href="#reservations" data-bind-href="hero.primaryCta.href">
+          <a class="btn btn--primary" href="reservations.html" data-bind-href="hero.primaryCta.href">
             <span data-bind="hero.primaryCta.label">Reserve a table</span>
             <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-arrow-right"></use></svg>
           </a>
-          <a class="btn btn--ghost" href="#menu" data-bind-href="hero.secondaryCta.href">
+          <a class="btn btn--ghost" href="menu.html" data-bind-href="hero.secondaryCta.href">
             <span data-bind="hero.secondaryCta.label">Explore the menu</span>
           </a>
         </div>
-        <dl class="hero__meta" data-hero-fade style="--d:3" data-hero-meta>
-          <div class="hero__meta-item"><dt>Dinner</dt><dd>Tue – Sun · 5:30 – 11 pm</dd></div>
-          <div class="hero__meta-item"><dt>Kitchen</dt><dd>Seasonal tasting &amp; à la carte</dd></div>
-          <div class="hero__meta-item"><dt>Find us</dt><dd>218 Linden Row, Portland</dd></div>
-        </dl>
+        <dl class="hero__meta" data-hero-fade style="--d:3" data-render="hero-meta"><!--r--><div class="hero__meta-item"><dt>Dinner</dt><dd>Tue – Sun · from 5 pm</dd></div><div class="hero__meta-item"><dt>Kitchen</dt><dd>Seasonal tasting &amp; à la carte</dd></div><div class="hero__meta-item"><dt>Find us</dt><dd>218 Linden Row, Portland</dd></div><!--/r--></dl>
       </div>
 
       <a class="hero__scroll" href="#signature" data-hero-fade style="--d:4">
@@ -174,6 +221,8 @@
             <p class="eyebrow" data-reveal><span class="eyebrow__num">01</span> <span data-bind="wheel.eyebrow">The Signature Wheel</span></p>
             <h2 class="section-title" id="wheel-title" data-reveal style="--reveal-delay:1" data-bind-html="wheel.title">Seven plates, <em>one table</em>.</h2>
             <p class="dish-wheel__intro" data-reveal style="--reveal-delay:2" data-bind="wheel.intro">Turn the wheel through the dishes our guests return for. Each is built around a single peak-season ingredient and finished at the pass by our head chef.</p>
+            <a class="text-link" href="signature.html" data-reveal style="--reveal-delay:2">All signature dishes <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-arrow-right"></use></svg></a>
+            <a class="text-link" href="signature.html" data-reveal style="--reveal-delay:2">All signature dishes <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-arrow-right"></use></svg></a>
           </header>
 
           <div class="dish-wheel__stage" data-wheel-stage data-reveal="zoom">
@@ -216,88 +265,122 @@
           <p class="visually-hidden" aria-live="polite" aria-atomic="true" data-wheel-live></p>
 
           <!-- Shown when JavaScript is off, content.js has an error, or the wheel failed to start -->
-          <p class="dish-wheel__fallback" data-wheel-fallback>The signature dishes can't be shown right now. You can still <a href="#menu">browse the full menu</a>.</p>
+          <p class="dish-wheel__fallback" data-wheel-fallback>The signature dishes can't be shown right now. You can still <a href="menu.html">browse the full menu</a>.</p>
         </div>
       </div>
     </section>
 
-    <!-- ===================================================== Phase 3 placeholders
-         Real anchors so navigation works now; full designs arrive in Phase 3. -->
-    <section class="section section-stub" id="about" aria-labelledby="about-title">
-      <div class="container section-stub__inner">
-        <p class="eyebrow"><span class="eyebrow__num">02</span> Our Story</p>
-        <h2 class="section-title" id="about-title">A small room with a <em>long table</em>.</h2>
-        <p class="section-stub__note">About section — designed in Phase 3.</p>
+    <!-- ===================================================== 3. Story preview -->
+    <section class="section" id="story" aria-labelledby="story-title">
+      <div class="container split">
+        <div class="split__media" data-reveal="zoom">
+          <div class="media-frame">
+            <img data-bind-img="about.image" data-widths="480,720,960" data-aspect="0.8" sizes="(min-width: 56em) 36rem, calc(100vw - 2rem)" width="960" height="1200" alt="The dining room in the evening, with warm pendant lights above the tables" loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?auto=format&amp;fit=crop&amp;w=960&amp;h=1200&amp;q=70" srcset="https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?auto=format&amp;fit=crop&amp;w=480&amp;h=600&amp;q=70 480w, https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?auto=format&amp;fit=crop&amp;w=720&amp;h=900&amp;q=70 720w, https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?auto=format&amp;fit=crop&amp;w=960&amp;h=1200&amp;q=70 960w">
+          </div>
+        </div>
+        <div class="split__body">
+          <p class="eyebrow" data-reveal><span class="eyebrow__num">02</span> <span data-bind="about.eyebrow">Our Story</span></p>
+          <h2 class="section-title" id="story-title" data-reveal style="--reveal-delay:1" data-bind-html="about.title">A small room with a <em>long table</em>.</h2>
+          <p data-reveal style="--reveal-delay:2" data-bind="about.summary">Aurelia began in 2014 as eight tables around a wood-fired hearth. The room has grown a little since; the idea has not. We cook what the season gives us and let every guest keep their table for the whole evening.</p>
+          <a class="text-link" href="about.html" data-reveal style="--reveal-delay:2">Read our story <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-arrow-right"></use></svg></a>
+        </div>
       </div>
     </section>
 
-    <section class="section section--alt section-stub" id="dishes" aria-labelledby="dishes-title">
-      <div class="container section-stub__inner">
-        <p class="eyebrow"><span class="eyebrow__num">03</span> Signature Dishes</p>
-        <h2 class="section-title" id="dishes-title">From the <em>pass</em>.</h2>
-        <p class="section-stub__note">Signature dish cards — designed in Phase 3.</p>
+    <!-- ===================================================== 4. Dining experience -->
+    <section class="section section--alt" id="experience" aria-labelledby="experience-title">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow" data-reveal><span class="eyebrow__num">03</span> <span data-bind="experience.eyebrow">The Experience</span></p>
+          <h2 class="section-title" id="experience-title" data-reveal style="--reveal-delay:1" data-bind-html="experience.title">Three ways to spend <em>the evening</em>.</h2>
+          <p class="section-head__intro" data-reveal style="--reveal-delay:2" data-bind="experience.intro">However you dine with us, the table is yours for the night.</p>
+        </header>
+        <ul class="card-grid card-grid--3" role="list" data-reveal data-render="experience"><!--r--><li class="experience-card"><div class="experience-card__media"><img src="https://images.unsplash.com/photo-1581349485608-9469926a8e5e?auto=format&amp;fit=crop&amp;w=900&amp;h=675&amp;q=70" srcset="https://images.unsplash.com/photo-1581349485608-9469926a8e5e?auto=format&amp;fit=crop&amp;w=400&amp;h=300&amp;q=70 400w, https://images.unsplash.com/photo-1581349485608-9469926a8e5e?auto=format&amp;fit=crop&amp;w=640&amp;h=480&amp;q=70 640w, https://images.unsplash.com/photo-1581349485608-9469926a8e5e?auto=format&amp;fit=crop&amp;w=900&amp;h=675&amp;q=70 900w" sizes="(min-width: 60em) 24rem, (min-width: 40em) calc(50vw - 3rem), calc(100vw - 2rem)" width="900" height="675" alt="A chef plating a row of dishes at the kitchen pass" loading="lazy" decoding="async"></div><div class="experience-card__body"><h3 class="experience-card__title">Tasting Menu</h3><p class="experience-card__text">Seven courses that follow the week&#39;s harvest, with an optional wine or non-alcoholic pairing.</p><p class="experience-card__detail">From $125 per guest</p></div></li><li class="experience-card"><div class="experience-card__media"><img src="https://images.unsplash.com/photo-1432139509613-5c4255815697?auto=format&amp;fit=crop&amp;w=900&amp;h=675&amp;q=70" srcset="https://images.unsplash.com/photo-1432139509613-5c4255815697?auto=format&amp;fit=crop&amp;w=400&amp;h=300&amp;q=70 400w, https://images.unsplash.com/photo-1432139509613-5c4255815697?auto=format&amp;fit=crop&amp;w=640&amp;h=480&amp;q=70 640w, https://images.unsplash.com/photo-1432139509613-5c4255815697?auto=format&amp;fit=crop&amp;w=900&amp;h=675&amp;q=70 900w" sizes="(min-width: 60em) 24rem, (min-width: 40em) calc(50vw - 3rem), calc(100vw - 2rem)" width="900" height="675" alt="Seared beef fillet with broccolini on a white plate" loading="lazy" decoding="async"></div><div class="experience-card__body"><h3 class="experience-card__title">À la Carte</h3><p class="experience-card__text">Choose from the full menu, including every dish on the signature wheel.</p><p class="experience-card__detail">Mains from $28</p></div></li><li class="experience-card"><div class="experience-card__media"><img src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&amp;fit=crop&amp;w=900&amp;h=675&amp;q=70" srcset="https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&amp;fit=crop&amp;w=400&amp;h=300&amp;q=70 400w, https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&amp;fit=crop&amp;w=640&amp;h=480&amp;q=70 640w, https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&amp;fit=crop&amp;w=900&amp;h=675&amp;q=70 900w" sizes="(min-width: 60em) 24rem, (min-width: 40em) calc(50vw - 3rem), calc(100vw - 2rem)" width="900" height="675" alt="A cocktail being poured over a large ice cube" loading="lazy" decoding="async"></div><div class="experience-card__body"><h3 class="experience-card__title">Bar &amp; Counter</h3><p class="experience-card__text">Classic cocktails, small plates and a seat facing the fire. No reservation needed.</p><p class="experience-card__detail">Walk-ins welcome</p></div></li><!--/r--></ul>
       </div>
     </section>
 
-    <section class="section section-stub" id="menu" aria-labelledby="menu-title">
-      <div class="container section-stub__inner">
-        <p class="eyebrow"><span class="eyebrow__num">04</span> The Menu</p>
-        <h2 class="section-title" id="menu-title">Tonight’s <em>menu</em>.</h2>
-        <p class="section-stub__note">Interactive menu — designed in Phase 3.</p>
+    <!-- ===================================================== 5. Menu preview -->
+    <section class="section" id="menu-preview" aria-labelledby="menu-preview-title">
+      <div class="container split">
+        <div class="split__body">
+          <p class="eyebrow" data-reveal><span class="eyebrow__num">04</span> <span data-bind="menu.eyebrow">The Menu</span></p>
+          <h2 class="section-title" id="menu-preview-title" data-reveal style="--reveal-delay:1" data-bind-html="menu.title">A short menu that <em>changes with the market</em>.</h2>
+          <p data-reveal style="--reveal-delay:2" data-bind="menu.intro">Every dish can be ordered à la carte. Ask your server about this week&#39;s additions.</p>
+          <div class="section-actions" data-reveal style="--reveal-delay:2">
+            <a class="btn btn--primary" href="menu.html">View the full menu <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-arrow-right"></use></svg></a>
+          </div>
+        </div>
+        <ul class="menu-list menu-list--single" role="list" aria-label="Featured dishes" data-reveal style="--reveal-delay:1" data-render="menu-preview" data-limit="4"><!--r--><li class="menu-item"><div class="menu-item__head"><h3 class="menu-item__name">Charred Beef Tataki</h3><span class="menu-item__leader" aria-hidden="true"></span><p class="menu-item__price"><span class="visually-hidden">Price: </span>$28</p></div><p class="menu-item__desc">Seared sirloin, pickled red onion, watercress, cashew, yuzu ponzu.</p><ul class="menu-item__tags" aria-label="Dietary"><li><span aria-hidden="true">DF</span><span class="visually-hidden">Dairy-free</span></li></ul></li><li class="menu-item"><div class="menu-item__head"><h3 class="menu-item__name">Ember-Seared Beef Fillet</h3><span class="menu-item__leader" aria-hidden="true"></span><p class="menu-item__price"><span class="visually-hidden">Price: </span>$58</p></div><p class="menu-item__desc">Dry-aged fillet, charred broccolini, smoked bone-marrow jus.</p><ul class="menu-item__tags" aria-label="Dietary"><li><span aria-hidden="true">GF</span><span class="visually-hidden">Gluten-free</span></li></ul></li><li class="menu-item"><div class="menu-item__head"><h3 class="menu-item__name">Cedar-Cured Salmon</h3><span class="menu-item__leader" aria-hidden="true"></span><p class="menu-item__price"><span class="visually-hidden">Price: </span>$42</p></div><p class="menu-item__desc">Fennel and citrus slaw, lime beurre blanc.</p><ul class="menu-item__tags" aria-label="Dietary"><li><span aria-hidden="true">GF</span><span class="visually-hidden">Gluten-free</span></li></ul></li><li class="menu-item"><div class="menu-item__head"><h3 class="menu-item__name">Raspberry &amp; Elderflower Layer</h3><span class="menu-item__leader" aria-hidden="true"></span><p class="menu-item__price"><span class="visually-hidden">Price: </span>$16</p></div><p class="menu-item__desc">Vanilla genoise, elderflower cream, raspberry glaze.</p><ul class="menu-item__tags" aria-label="Dietary"><li><span aria-hidden="true">V</span><span class="visually-hidden">Vegetarian</span></li></ul></li><!--/r--></ul>
       </div>
     </section>
 
-    <section class="section section--alt section-stub" id="chef" aria-labelledby="chef-title">
-      <div class="container section-stub__inner">
-        <p class="eyebrow"><span class="eyebrow__num">05</span> The Chef</p>
-        <h2 class="section-title" id="chef-title">Cooking with <em>fire &amp; patience</em>.</h2>
-        <p class="section-stub__note">Chef story — designed in Phase 3.</p>
+    <!-- ===================================================== 6. Chef preview -->
+    <section class="section section--alt" id="chef-preview" aria-labelledby="chef-preview-title">
+      <div class="container split split--reverse">
+        <div class="split__media" data-reveal="zoom">
+          <div class="media-frame">
+            <img data-bind-img="chef.portrait" data-widths="480,720,960" data-aspect="0.8" sizes="(min-width: 56em) 36rem, calc(100vw - 2rem)" width="960" height="1200" alt="A chef in an apron plating a dish beneath copper kitchen lamps" loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&amp;fit=crop&amp;w=960&amp;h=1200&amp;q=70" srcset="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&amp;fit=crop&amp;w=480&amp;h=600&amp;q=70 480w, https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&amp;fit=crop&amp;w=720&amp;h=900&amp;q=70 720w, https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&amp;fit=crop&amp;w=960&amp;h=1200&amp;q=70 960w">
+          </div>
+        </div>
+        <div class="split__body">
+          <p class="eyebrow" data-reveal><span class="eyebrow__num">05</span> <span data-bind="chef.eyebrow">The Chef</span></p>
+          <h2 class="section-title" id="chef-preview-title" data-reveal style="--reveal-delay:1"><span data-bind="chef.name">Marcus Vale</span></h2>
+          <p class="eyebrow" data-reveal style="--reveal-delay:1" data-bind="chef.role">Head Chef &amp; Co-founder</p>
+          <p data-reveal style="--reveal-delay:2" data-bind="chef.summary">Marcus built Aurelia around a single wood-fired hearth and a small circle of growers. His food is direct, seasonal and finished with restraint.</p>
+          <a class="text-link" href="chef.html" data-reveal style="--reveal-delay:2">Meet the chef <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-arrow-right"></use></svg></a>
+        </div>
       </div>
     </section>
 
-    <section class="section section-stub" id="experience" aria-labelledby="experience-title">
-      <div class="container section-stub__inner">
-        <p class="eyebrow"><span class="eyebrow__num">06</span> The Experience</p>
-        <h2 class="section-title" id="experience-title">An evening, <em>unhurried</em>.</h2>
-        <p class="section-stub__note">Dining experience — designed in Phase 3.</p>
+    <!-- ===================================================== 7. Gallery preview -->
+    <section class="section" id="gallery-preview" aria-labelledby="gallery-preview-title">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow" data-reveal><span class="eyebrow__num">06</span> <span data-bind="gallery.eyebrow">Gallery</span></p>
+          <h2 class="section-title" id="gallery-preview-title" data-reveal style="--reveal-delay:1" data-bind-html="gallery.title">Moments at <em>Aurelia</em>.</h2>
+        </header>
+        <ul class="gallery-strip" role="list" data-reveal data-render="gallery-strip" data-limit="6"><!--r--><li class="gallery-strip__item"><a class="gallery-strip__link" href="gallery.html"><img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;w=520&amp;h=520&amp;q=70" srcset="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;w=240&amp;h=240&amp;q=70 240w, https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;w=360&amp;h=360&amp;q=70 360w, https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;w=520&amp;h=520&amp;q=70 520w" sizes="(min-width: 60em) 12rem, (min-width: 40em) 30vw, 45vw" width="520" height="520" alt="" loading="lazy" decoding="async"><span class="gallery-strip__caption">Service in the dining room</span></a></li><li class="gallery-strip__item"><a class="gallery-strip__link" href="gallery.html"><img src="https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&amp;fit=crop&amp;w=520&amp;h=520&amp;q=70" srcset="https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&amp;fit=crop&amp;w=240&amp;h=240&amp;q=70 240w, https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&amp;fit=crop&amp;w=360&amp;h=360&amp;q=70 360w, https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&amp;fit=crop&amp;w=520&amp;h=520&amp;q=70 520w" sizes="(min-width: 60em) 12rem, (min-width: 40em) 30vw, 45vw" width="520" height="520" alt="" loading="lazy" decoding="async"><span class="gallery-strip__caption">The open kitchen</span></a></li><li class="gallery-strip__item"><a class="gallery-strip__link" href="gallery.html"><img src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&amp;fit=crop&amp;w=520&amp;h=520&amp;q=70" srcset="https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&amp;fit=crop&amp;w=240&amp;h=240&amp;q=70 240w, https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&amp;fit=crop&amp;w=360&amp;h=360&amp;q=70 360w, https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&amp;fit=crop&amp;w=520&amp;h=520&amp;q=70 520w" sizes="(min-width: 60em) 12rem, (min-width: 40em) 30vw, 45vw" width="520" height="520" alt="" loading="lazy" decoding="async"><span class="gallery-strip__caption">Langoustine linguine</span></a></li><li class="gallery-strip__item"><a class="gallery-strip__link" href="gallery.html"><img src="https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&amp;fit=crop&amp;w=520&amp;h=520&amp;q=70" srcset="https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&amp;fit=crop&amp;w=240&amp;h=240&amp;q=70 240w, https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&amp;fit=crop&amp;w=360&amp;h=360&amp;q=70 360w, https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&amp;fit=crop&amp;w=520&amp;h=520&amp;q=70 520w" sizes="(min-width: 60em) 12rem, (min-width: 40em) 30vw, 45vw" width="520" height="520" alt="" loading="lazy" decoding="async"><span class="gallery-strip__caption">The bar after dark</span></a></li><li class="gallery-strip__item"><a class="gallery-strip__link" href="gallery.html"><img src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&amp;fit=crop&amp;w=520&amp;h=520&amp;q=70" srcset="https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&amp;fit=crop&amp;w=240&amp;h=240&amp;q=70 240w, https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&amp;fit=crop&amp;w=360&amp;h=360&amp;q=70 360w, https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&amp;fit=crop&amp;w=520&amp;h=520&amp;q=70 520w" sizes="(min-width: 60em) 12rem, (min-width: 40em) 30vw, 45vw" width="520" height="520" alt="" loading="lazy" decoding="async"><span class="gallery-strip__caption">Smoked Old Fashioned</span></a></li><li class="gallery-strip__item"><a class="gallery-strip__link" href="gallery.html"><img src="https://images.unsplash.com/photo-1581349485608-9469926a8e5e?auto=format&amp;fit=crop&amp;w=520&amp;h=520&amp;q=70" srcset="https://images.unsplash.com/photo-1581349485608-9469926a8e5e?auto=format&amp;fit=crop&amp;w=240&amp;h=240&amp;q=70 240w, https://images.unsplash.com/photo-1581349485608-9469926a8e5e?auto=format&amp;fit=crop&amp;w=360&amp;h=360&amp;q=70 360w, https://images.unsplash.com/photo-1581349485608-9469926a8e5e?auto=format&amp;fit=crop&amp;w=520&amp;h=520&amp;q=70 520w" sizes="(min-width: 60em) 12rem, (min-width: 40em) 30vw, 45vw" width="520" height="520" alt="" loading="lazy" decoding="async"><span class="gallery-strip__caption">Plating at the pass</span></a></li><!--/r--></ul>
+        <div class="section-actions" data-reveal>
+          <a class="btn btn--ghost" href="gallery.html">View the gallery <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-arrow-right"></use></svg></a>
+        </div>
       </div>
     </section>
 
-    <section class="section section--alt section-stub" id="gallery" aria-labelledby="gallery-title">
-      <div class="container section-stub__inner">
-        <p class="eyebrow"><span class="eyebrow__num">07</span> Gallery</p>
-        <h2 class="section-title" id="gallery-title">Moments at <em>Aurelia</em>.</h2>
-        <p class="section-stub__note">Photo gallery — designed in Phase 3.</p>
+    <!-- ===================================================== 8. Sample testimonials -->
+    <section class="section section--alt" id="testimonials" aria-labelledby="testimonials-title">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow" data-reveal><span class="eyebrow__num">07</span> <span data-bind="testimonials.eyebrow">Kind Words</span></p>
+          <h2 class="section-title" id="testimonials-title" data-reveal style="--reveal-delay:1" data-bind-html="testimonials.title">From our <em>guests</em>.</h2>
+          <p data-reveal style="--reveal-delay:2"><span class="sample-label" data-bind="testimonials.label">Sample reviews</span></p>
+          <p class="disclaimer" data-reveal style="--reveal-delay:2" data-bind="testimonials.disclaimer">These are placeholder reviews for demonstration only. Replace them with genuine guest feedback you have permission to publish.</p>
+        </header>
+        <ul class="testimonials" role="list" data-reveal data-render="testimonials"><!--r--><li class="testimonial"><figure class="testimonial__figure"><blockquote class="testimonial__quote"><p>We came for an anniversary and stayed until the candles burned down. Nobody rushed us once.</p></blockquote><figcaption class="testimonial__cite"><span class="testimonial__name">Sample guest</span><span class="testimonial__context">Dinner for two</span></figcaption></figure></li><li class="testimonial"><figure class="testimonial__figure"><blockquote class="testimonial__quote"><p>The beef fillet is worth the trip on its own, but the bread made me want to move in.</p></blockquote><figcaption class="testimonial__cite"><span class="testimonial__name">Sample guest</span><span class="testimonial__context">Tasting menu</span></figcaption></figure></li><li class="testimonial"><figure class="testimonial__figure"><blockquote class="testimonial__quote"><p>Warm, quiet and genuinely kind service. They remembered my allergy without me repeating it.</p></blockquote><figcaption class="testimonial__cite"><span class="testimonial__name">Sample guest</span><span class="testimonial__context">Family dinner</span></figcaption></figure></li><!--/r--></ul>
       </div>
     </section>
 
-    <section class="section section-stub" id="testimonials" aria-labelledby="testimonials-title">
-      <div class="container section-stub__inner">
-        <p class="eyebrow"><span class="eyebrow__num">08</span> Kind Words</p>
-        <h2 class="section-title" id="testimonials-title">From our <em>guests</em>.</h2>
-        <p class="section-stub__note">Sample testimonials — designed in Phase 3.</p>
-      </div>
-    </section>
-
-    <section class="section section--alt section-stub" id="reservations" aria-labelledby="reservations-title">
-      <div class="container section-stub__inner">
-        <p class="eyebrow"><span class="eyebrow__num">09</span> Reservations</p>
-        <h2 class="section-title" id="reservations-title">Reserve your <em>table</em>.</h2>
-        <p class="section-stub__note">
-          Reservation inquiry form — built in Phase 3/4. Until then, call
-          <a href="tel:+15550142290" data-bind="contact.phone" data-bind-href="contact.phoneHref">+1 (555) 014-2290</a>.
-        </p>
+    <!-- ===================================================== Reservation call to action -->
+    <section class="section cta-band" aria-labelledby="cta-title">
+      <div class="container cta-band__inner">
+        <p class="eyebrow" data-reveal data-bind="ctaBand.eyebrow">Reservations</p>
+        <h2 class="section-title" id="cta-title" data-reveal style="--reveal-delay:1" data-bind-html="ctaBand.title">Your table is <em>waiting</em>.</h2>
+        <p class="cta-band__text" data-reveal style="--reveal-delay:2" data-bind="ctaBand.text">Send an inquiry for dinner, or call us for tables tonight and for groups larger than eight.</p>
+        <div class="cta-band__actions" data-reveal style="--reveal-delay:2">
+          <a class="btn btn--primary" href="reservations.html" data-bind-href="ctaBand.primary.href"><span data-bind="ctaBand.primary.label">Reserve a table</span><svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-arrow-right"></use></svg></a>
+          <a class="btn btn--ghost" href="tel:+15035550142" data-bind-href="contact.phoneHref">Call <span data-bind="contact.phone">+1 (503) 555-0142</span></a>
+        </div>
+        <p class="cta-band__meta" data-bind="hours.summary">Tue – Sun · from 5 pm</p>
       </div>
     </section>
   </main>
 
-  <!-- ===================================================== Footer / Contact -->
-  <footer class="site-footer" id="contact" aria-labelledby="footer-title">
+  <!-- ===================================================== Footer (identical on every page) -->
+  <footer class="site-footer" aria-labelledby="footer-title">
     <div class="container">
-      <h2 class="visually-hidden" id="footer-title">Contact</h2>
-      <div class="site-footer__grid">
+      <h2 class="visually-hidden" id="footer-title">Site information</h2>
+      <div class="site-footer__top">
         <div class="site-footer__brand">
-          <a class="brand" href="#top">
+          <a class="brand" href="index.html">
             <svg class="brand__mark" aria-hidden="true" focusable="false"><use href="#icon-monogram"></use></svg>
             <span class="brand__text">
               <span class="brand__name" data-bind="brand.name">Aurelia</span>
@@ -305,20 +388,41 @@
             </span>
           </a>
           <p data-bind="brand.tagline">Modern European kitchen</p>
+          <a class="btn btn--primary btn--sm" href="reservations.html" data-bind-href="navCta.href">Reserve a table</a>
         </div>
-        <address>
-          <span data-bind="contact.address.line1">218 Linden Row</span><br>
-          <span data-bind="contact.address.line2">Riverside District, Portland, OR 97204</span>
-        </address>
-        <p>
-          <a href="tel:+15550142290" data-bind="contact.phone" data-bind-href="contact.phoneHref">+1 (555) 014-2290</a><br>
-          <a href="mailto:reservations@aurelia.example" data-bind="contact.email" data-bind-href="contact.emailHref">reservations@aurelia.example</a>
-        </p>
+
+        <nav class="footer-nav" aria-labelledby="footer-explore">
+          <h3 class="site-footer__heading" id="footer-explore">Explore</h3>
+          <ul data-render="nav" data-variant="footer"><!--r--><li><a class="footer-nav__link" href="index.html" aria-current="page">Home</a></li><li><a class="footer-nav__link" href="about.html">About</a></li><li><a class="footer-nav__link" href="signature.html">Signature</a></li><li><a class="footer-nav__link" href="menu.html">Menu</a></li><li><a class="footer-nav__link" href="chef.html">Chef</a></li><li><a class="footer-nav__link" href="gallery.html">Gallery</a></li><li><a class="footer-nav__link" href="contact.html">Contact</a></li><!--/r--></ul>
+        </nav>
+
+        <div>
+          <h3 class="site-footer__heading">Visit</h3>
+          <address data-render="address"><!--r-->218 Linden Row<br>Riverside District<br>Portland, OR 97204<!--/r--></address>
+          <a class="site-footer__directions" href="https://www.openstreetmap.org/search?query=218%20Linden%20Row%2C%20Portland%2C%20OR%2C%2097204%2C%20US" data-bind-href="$map" target="_blank" rel="noopener">
+            Get directions <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-external"></use></svg><span class="visually-hidden"> (opens in a new tab)</span>
+          </a>
+        </div>
+
+        <div class="site-footer__contact">
+          <h3 class="site-footer__heading">Contact</h3>
+          <ul>
+            <li><a href="tel:+15035550142" data-bind="contact.phone" data-bind-href="contact.phoneHref">+1 (503) 555-0142</a></li>
+            <li><a href="mailto:reservations@aurelia.example" data-bind="contact.email" data-bind-href="contact.emailHref">reservations@aurelia.example</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="site-footer__heading">Hours</h3>
+          <ul class="hours-compact" data-render="hours-compact"><!--r--><li><span class="hours-compact__day">Monday</span> <span class="hours-compact__time">Closed</span></li><li><span class="hours-compact__day">Tuesday – Thursday</span> <span class="hours-compact__time">5:30 – 10:30 pm</span></li><li><span class="hours-compact__day">Friday &amp; Saturday</span> <span class="hours-compact__time">5:30 – 11:30 pm</span></li><li><span class="hours-compact__day">Sunday</span> <span class="hours-compact__time">5 – 10 pm</span></li><!--/r--></ul>
+        </div>
       </div>
-      <p class="site-footer__legal">
-        © <span data-year>2026</span> <span data-bind="brand.name">Aurelia</span> <span data-bind="brand.descriptor">Dining</span>. Website template by TokaMD.
-        Sample content: names, addresses and photography are placeholders.
-      </p>
+
+      <div class="site-footer__bottom">
+        <p>© <span data-bind="$year">2026</span> <span data-bind="$fullName">Aurelia Dining</span>. <span data-bind="footer.credit">Website template by TokaMD.</span></p>
+        <p class="site-footer__note" data-bind="footer.note">Demo content: all names, contact details, prices, reviews and people shown are fictional placeholders.</p>
+        <a class="back-to-top" href="#top">Back to top <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-arrow-right"></use></svg></a>
+      </div>
     </div>
   </footer>
 </body>

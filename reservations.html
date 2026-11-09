@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reservations — Aurelia Dining</title>
+  <meta name="description" content="Send a reservation inquiry to Aurelia Dining. We reply to confirm availability; call us for same-day tables and larger parties.">
+  <meta name="theme-color" content="#141312">
+  <meta name="color-scheme" content="dark">
+
+  <!-- Social previews. Canonical URL + og:url are added from content.js → site.url (see DEPLOYMENT.md). -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Aurelia Dining">
+  <meta property="og:title" content="Reservations — Aurelia Dining">
+  <meta property="og:description" content="Send a reservation inquiry to Aurelia Dining. We reply to confirm availability; call us for same-day tables and larger parties.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;w=1200&amp;h=630&amp;q=70">
+  <meta property="og:image:alt" content="A plated dish being served at a candlelit table">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Reservations — Aurelia Dining">
+  <meta name="twitter:description" content="Send a reservation inquiry to Aurelia Dining. We reply to confirm availability; call us for same-day tables and larger parties.">
+  <meta name="twitter:image" content="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;w=1200&amp;h=630&amp;q=70">
+
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+
+  <!-- Flag JS early (no flash of un-animated content). Failsafe: reveal the hero after 3s even if main.js never runs. -->
+  <script>
+    (function (d) { d.className = d.className.replace(/\bno-js\b/, "js"); setTimeout(function () { d.classList.add("is-ready"); }, 3000); })(document.documentElement);
+  </script>
+
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Manrope:wght@400;500;600&amp;display=swap">
+
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/nav.css">
+  <link rel="stylesheet" href="assets/css/hero.css">
+  <link rel="stylesheet" href="assets/css/sections.css">
+  <link rel="stylesheet" href="assets/css/forms.css">
+
+  <!-- Content first, then helpers, components and boot. All deferred: order is preserved, rendering is never blocked. -->
+  <script src="assets/js/content.js" defer></script>
+  <script src="assets/js/core/utils.js" defer></script>
+  <script src="assets/js/core/render.js" defer></script>
+  <script src="assets/js/core/bind.js" defer></script>
+  <script src="assets/js/core/seo.js" defer></script>
+  <script src="assets/js/core/reveal.js" defer></script>
+  <script src="assets/js/components/sections.js" defer></script>
+  <script src="assets/js/components/reservation.js" defer></script>
+  <script src="assets/js/components/nav.js" defer></script>
+  <script src="assets/js/components/hero.js" defer></script>
+  <script src="assets/js/main.js" defer></script>
+</head>
+<body data-page="reservations">
+  <!-- SVG sprite: original icons for this template -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="icon-monogram" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="22.5" fill="none" stroke="currentColor" stroke-width="1"/>
+      <circle cx="24" cy="24" r="19" fill="none" stroke="currentColor" stroke-width="0.6" opacity=".5"/>
+      <path d="M15.5 34 24 12.5 32.5 34M18.6 26.5h10.8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="m24 5.5 1.2 1.2L24 7.9l-1.2-1.2z" fill="currentColor"/>
+    </symbol>
+    <symbol id="icon-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+    <symbol id="icon-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+    <symbol id="icon-pause" viewBox="0 0 24 24"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="icon-phone" viewBox="0 0 24 24"><path d="M5.5 4h3l1.5 4-2 1.3a11 11 0 0 0 6.7 6.7L16 14l4 1.5v3a1.5 1.5 0 0 1-1.5 1.5A15.5 15.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4z"/></symbol>
+    <symbol id="icon-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="m3.5 6.5 8.5 6 8.5-6"/></symbol>
+    <symbol id="icon-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+    <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></symbol>
+    <symbol id="icon-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/></symbol>
+  </svg>
+
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- ===================================================== Header (identical on every page) -->
+  <header class="site-header" data-header>
+    <div class="site-header__inner container">
+      <a class="brand" href="index.html">
+        <svg class="brand__mark" aria-hidden="true" focusable="false"><use href="#icon-monogram"></use></svg>
+        <span class="brand__text">
+          <span class="brand__name" data-bind="brand.name">Aurelia</span>
+          <span class="brand__descriptor" data-bind="brand.descriptor">Dining</span>
+        </span>
+      </a>
+
+      <nav class="site-nav" aria-label="Primary">
+        <ul class="site-nav__list" role="list" data-render="nav" data-variant="desktop"><!--r--><li><a class="site-nav__link" href="about.html" data-nav-link>About</a></li><li><a class="site-nav__link" href="signature.html" data-nav-link>Signature</a></li><li><a class="site-nav__link" href="menu.html" data-nav-link>Menu</a></li><li><a class="site-nav__link" href="chef.html" data-nav-link>Chef</a></li><li><a class="site-nav__link" href="gallery.html" data-nav-link>Gallery</a></li><li><a class="site-nav__link" href="contact.html" data-nav-link>Contact</a></li><!--/r--></ul>
+      </nav>
+
+      <a class="btn btn--primary btn--sm site-header__cta" href="reservations.html" data-nav-cta data-bind="navCta.label" data-bind-href="navCta.href" aria-current="page">Reserve</a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" data-nav-toggle>
+        <span class="visually-hidden">Menu</span>
+        <span class="nav-toggle__bars" aria-hidden="true"><span></span><span></span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile menu: sibling of the header (not inside it) so position:fixed is relative to the viewport -->
+  <div class="mobile-menu" id="mobile-menu" data-mobile-menu>
+    <nav aria-label="Mobile">
+      <ul class="mobile-menu__list" role="list" data-render="nav" data-variant="mobile"><!--r--><li class="mobile-menu__item" style="--i:0"><a class="mobile-menu__link" href="index.html" data-nav-link><span class="mobile-menu__num" aria-hidden="true">01</span><span>Home</span></a></li><li class="mobile-menu__item" style="--i:1"><a class="mobile-menu__link" href="about.html" data-nav-link><span class="mobile-menu__num" aria-hidden="true">02</span><span>About</span></a></li><li class="mobile-menu__item" style="--i:2"><a class="mobile-menu__link" href="signature.html" data-nav-link><span class="mobile-menu__num" aria-hidden="true">03</span><span>Signature</span></a></li><li class="mobile-menu__item" style="--i:3"><a class="mobile-menu__link" href="menu.html" data-nav-link><span class="mobile-menu__num" aria-hidden="true">04</span><span>Menu</span></a></li><li class="mobile-menu__item" style="--i:4"><a class="mobile-menu__link" href="chef.html" data-nav-link><span class="mobile-menu__num" aria-hidden="true">05</span><span>Chef</span></a></li><li class="mobile-menu__item" style="--i:5"><a class="mobile-menu__link" href="gallery.html" data-nav-link><span class="mobile-menu__num" aria-hidden="true">06</span><span>Gallery</span></a></li><li class="mobile-menu__item" style="--i:6"><a class="mobile-menu__link" href="contact.html" data-nav-link><span class="mobile-menu__num" aria-hidden="true">07</span><span>Contact</span></a></li><!--/r--></ul>
+    </nav>
+    <div class="mobile-menu__footer">
+      <dl class="mobile-menu__details">
+        <div>
+          <dt>Reservations</dt>
+          <dd><a href="tel:+15035550142" data-bind="contact.phone" data-bind-href="contact.phoneHref">+1 (503) 555-0142</a></dd>
+        </div>
+        <div>
+          <dt>Dinner</dt>
+          <dd data-bind="hours.summary">Tue – Sun · from 5 pm</dd>
+        </div>
+      </dl>
+      <a class="btn btn--primary" href="reservations.html" data-bind-href="navCta.href">Reserve a table</a>
+    </div>
+  </div>
+
+  <main id="main" tabindex="-1">
+    <!-- ===================================================== Page hero -->
+    <section class="hero hero--page" id="top" aria-labelledby="page-title" data-hero>
+      <div class="hero__media" data-hero-media>
+        <img class="hero__img"
+             src="https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?auto=format&amp;fit=crop&amp;w=1600&amp;q=70"
+             srcset="https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?auto=format&amp;fit=crop&amp;w=640&amp;q=70 640w,
+                     https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?auto=format&amp;fit=crop&amp;w=960&amp;q=70 960w,
+                     https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?auto=format&amp;fit=crop&amp;w=1280&amp;q=70 1280w,
+                     https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?auto=format&amp;fit=crop&amp;w=1600&amp;q=70 1600w,
+                     https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?auto=format&amp;fit=crop&amp;w=2200&amp;q=65 2200w"
+             sizes="100vw"
+             width="1600" height="1067"
+             alt=""
+             fetchpriority="high">
+      </div>
+      <div class="hero__overlay" aria-hidden="true"></div>
+
+      <div class="hero__content container">
+        <nav class="breadcrumb" aria-label="Breadcrumb" data-hero-fade style="--d:0">
+          <ol>
+            <li><a href="index.html">Home</a></li>
+            <li><span aria-current="page" data-bind="pages.reservations.label">Reservations</span></li>
+          </ol>
+        </nav>
+        <p class="eyebrow" data-hero-fade style="--d:0" data-bind="pages.reservations.eyebrow">Reservations</p>
+        <h1 class="hero__title" id="page-title" data-render="title-lines" data-path="pages.reservations.heading"><!--r--><span class="line"><span class="line__inner" style="--i:0">Reserve</span></span> <span class="line"><span class="line__inner" style="--i:1">your <em>table</em>.</span></span><!--/r--></h1>
+        <p class="hero__lead" data-hero-fade style="--d:1" data-bind="pages.reservations.lead">Send us an inquiry and we will reply to confirm. For tonight, or for parties larger than eight, please call.</p>
+      </div>
+    </section>
+
+    <!-- ===================================================== Inquiry form -->
+    <section class="section" aria-labelledby="form-title">
+      <div class="container reservation-layout">
+        <div class="reservation" data-reservation>
+          <div class="reservation__intro">
+            <h2 class="section-title" id="form-title">Reservation <em>inquiry</em></h2>
+            <p data-bind="reservation.responseTime">We reply to every inquiry within one business day.</p>
+          </div>
+
+          <div class="form-notice" data-reservation-notice hidden>
+            <p class="form-notice__title">Online inquiries are switched off</p>
+            <p>This website isn't connected to a booking inbox yet, so the form can check your details but can't send them. Please call <a href="tel:+15035550142" data-bind="contact.phone" data-bind-href="contact.phoneHref">+1 (503) 555-0142</a> or email <a href="mailto:reservations@aurelia.example" data-bind="contact.email" data-bind-href="contact.emailHref">reservations@aurelia.example</a>.</p>
+          </div>
+
+          <!-- Shown when JavaScript is off or the form failed to start -->
+          <div class="reservation-fallback">
+            <p class="form-notice__title">Reserve by phone or email</p>
+            <p>To request a table, call <a href="tel:+15035550142" data-bind="contact.phone" data-bind-href="contact.phoneHref">+1 (503) 555-0142</a> or email <a href="mailto:reservations@aurelia.example" data-bind="contact.email" data-bind-href="contact.emailHref">reservations@aurelia.example</a>. We reply to every inquiry.</p>
+          </div>
+
+          <div class="form-errors" data-form-errors tabindex="-1" role="group" aria-labelledby="form-errors-title" hidden>
+            <h2 id="form-errors-title" data-form-errors-title>There is a problem with your inquiry</h2>
+            <ul></ul>
+          </div>
+
+          <form class="res-form" data-reservation-form method="post" aria-describedby="form-note">
+            <fieldset>
+              <legend>Your visit</legend>
+              <div class="field-row">
+            <div class="field">
+              <label for="res-date">Date <span class="field__req" aria-hidden="true">*</span></label>
+              <input id="res-date" name="date" type="date" required aria-describedby="res-date-error">
+              <p class="field__error" id="res-date-error" data-error></p>
+            </div>
+            <div class="field">
+              <label for="res-time">Time <span class="field__req" aria-hidden="true">*</span></label>
+              <select id="res-time" name="time" required aria-describedby="res-time-error" data-render="reservation-times"><!--r--><option value="">Select a time</option><option value="17:30">5:30 PM</option><option value="18:00">6:00 PM</option><option value="18:30">6:30 PM</option><option value="19:00">7:00 PM</option><option value="19:30">7:30 PM</option><option value="20:00">8:00 PM</option><option value="20:30">8:30 PM</option><option value="21:00">9:00 PM</option><!--/r--></select>
+              <p class="field__error" id="res-time-error" data-error></p>
+            </div>
+              </div>
+              <div class="field-row">
+            <div class="field">
+              <label for="res-guests">Guests <span class="field__req" aria-hidden="true">*</span></label>
+              <select id="res-guests" name="guests" required aria-describedby="res-guests-error" data-render="reservation-guests"><!--r--><option value="">Select party size</option><option value="1">1 guest</option><option value="2">2 guests</option><option value="3">3 guests</option><option value="4">4 guests</option><option value="5">5 guests</option><option value="6">6 guests</option><option value="7">7 guests</option><option value="8">8 guests</option><option value="more">More than 8</option><!--/r--></select>
+              <p class="field__error" id="res-guests-error" data-error></p>
+            </div>
+            <div class="field">
+              <label for="res-occasion">Occasion <span class="field__optional">(optional)</span></label>
+              <select id="res-occasion" name="occasion" aria-describedby="res-occasion-error" data-render="reservation-occasions"><!--r--><option value="">No special occasion</option><option value="Birthday">Birthday</option><option value="Anniversary">Anniversary</option><option value="Business dinner">Business dinner</option><option value="Date night">Date night</option><option value="Other">Other</option><!--/r--></select>
+              <p class="field__error" id="res-occasion-error" data-error></p>
+            </div>
+              </div>
+              <p class="field__hint" data-render="large-party-note"><!--r-->For parties of more than 8, or for the private room, please call +1 (503) 555-0142.<!--/r--></p>
+            </fieldset>
+
+            <fieldset>
+              <legend>Your details</legend>
+            <div class="field">
+              <label for="res-name">Full name <span class="field__req" aria-hidden="true">*</span></label>
+              <input id="res-name" name="name" type="text" required aria-describedby="res-name-error" autocomplete="name" maxlength="80">
+              <p class="field__error" id="res-name-error" data-error></p>
+            </div>
+              <div class="field-row">
+            <div class="field">
+              <label for="res-email">Email <span class="field__req" aria-hidden="true">*</span></label>
+              <input id="res-email" name="email" type="email" required aria-describedby="res-email-error" autocomplete="email" maxlength="120">
+              <p class="field__error" id="res-email-error" data-error></p>
+            </div>
+            <div class="field">
+              <label for="res-phone">Phone <span class="field__req" aria-hidden="true">*</span></label>
+              <input id="res-phone" name="phone" type="tel" required aria-describedby="res-phone-error" autocomplete="tel" maxlength="24">
+              <p class="field__error" id="res-phone-error" data-error></p>
+            </div>
+              </div>
+              <div class="field">
+                <label for="res-notes">Notes <span class="field__optional">(optional)</span></label>
+                <p class="field__hint" id="res-notes-hint">Allergies, dietary needs, accessibility requests or anything we should know. Up to 500 characters.</p>
+                <textarea id="res-notes" name="notes" maxlength="500" rows="5" aria-describedby="res-notes-hint res-notes-error"></textarea>
+                <p class="field__error" id="res-notes-error" data-error></p>
+              </div>
+            </fieldset>
+
+            <div class="form-trap" aria-hidden="true">
+              <label for="res-company">Company (leave empty)</label>
+              <input id="res-company" name="company" type="text" tabindex="-1" autocomplete="off">
+            </div>
+
+            <div class="form-footer">
+              <p class="form-footer__note" id="form-note">Fields marked <span class="field__req">*</span> are required. This sends an inquiry, not a confirmed booking.</p>
+              <button class="btn btn--primary" type="submit">Send inquiry <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-arrow-right"></use></svg></button>
+              <div class="form-status" data-form-status role="status" aria-live="polite"></div>
+            </div>
+          </form>
+
+          <div class="form-success" data-reservation-success tabindex="-1" hidden>
+            <h2>Inquiry <em>sent</em></h2>
+            <p data-success-message></p>
+            <p class="form-success__summary" data-success-summary></p>
+          </div>
+        </div>
+
+        <aside class="info-stack" aria-label="Reservation information">
+          <div class="info-card">
+            <h2 class="info-card__title">Opening hours</h2>
+            <dl class="hours" data-render="hours"><!--r--><div class="hours__row"><dt>Monday</dt><dd>Closed</dd></div><div class="hours__row"><dt>Tuesday – Thursday</dt><dd>5:30 – 10:30 pm</dd></div><div class="hours__row"><dt>Friday &amp; Saturday</dt><dd>5:30 – 11:30 pm</dd></div><div class="hours__row"><dt>Sunday</dt><dd>5 – 10 pm</dd></div><!--/r--></dl>
+            <p class="hours-note" data-bind="hours.note">The kitchen takes final orders 45 minutes before closing.</p>
+          </div>
+          <div class="info-card">
+            <h2 class="info-card__title">Prefer to talk?</h2>
+            <p>Call <a href="tel:+15035550142" data-bind="contact.phone" data-bind-href="contact.phoneHref">+1 (503) 555-0142</a> or email <a href="mailto:reservations@aurelia.example" data-bind="contact.email" data-bind-href="contact.emailHref">reservations@aurelia.example</a>.</p>
+          </div>
+          <div class="info-card">
+            <h2 class="info-card__title">Good to know</h2>
+            <ul class="policy-list" data-render="reservation-policy"><!--r--><li>This form sends an inquiry, not a booking. Your table is confirmed only when we reply.</li><li>Same-day tables: please call us.</li><li>We hold tables for 15 minutes after the reserved time.</li><!--/r--></ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================================================== Footer (identical on every page) -->
+  <footer class="site-footer" aria-labelledby="footer-title">
+    <div class="container">
+      <h2 class="visually-hidden" id="footer-title">Site information</h2>
+      <div class="site-footer__top">
+        <div class="site-footer__brand">
+          <a class="brand" href="index.html">
+            <svg class="brand__mark" aria-hidden="true" focusable="false"><use href="#icon-monogram"></use></svg>
+            <span class="brand__text">
+              <span class="brand__name" data-bind="brand.name">Aurelia</span>
+              <span class="brand__descriptor" data-bind="brand.descriptor">Dining</span>
+            </span>
+          </a>
+          <p data-bind="brand.tagline">Modern European kitchen</p>
+          <a class="btn btn--primary btn--sm" href="reservations.html" data-bind-href="navCta.href">Reserve a table</a>
+        </div>
+
+        <nav class="footer-nav" aria-labelledby="footer-explore">
+          <h3 class="site-footer__heading" id="footer-explore">Explore</h3>
+          <ul data-render="nav" data-variant="footer"><!--r--><li><a class="footer-nav__link" href="index.html">Home</a></li><li><a class="footer-nav__link" href="about.html">About</a></li><li><a class="footer-nav__link" href="signature.html">Signature</a></li><li><a class="footer-nav__link" href="menu.html">Menu</a></li><li><a class="footer-nav__link" href="chef.html">Chef</a></li><li><a class="footer-nav__link" href="gallery.html">Gallery</a></li><li><a class="footer-nav__link" href="contact.html">Contact</a></li><!--/r--></ul>
+        </nav>
+
+        <div>
+          <h3 class="site-footer__heading">Visit</h3>
+          <address data-render="address"><!--r-->218 Linden Row<br>Riverside District<br>Portland, OR 97204<!--/r--></address>
+          <a class="site-footer__directions" href="https://www.openstreetmap.org/search?query=218%20Linden%20Row%2C%20Portland%2C%20OR%2C%2097204%2C%20US" data-bind-href="$map" target="_blank" rel="noopener">
+            Get directions <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-external"></use></svg><span class="visually-hidden"> (opens in a new tab)</span>
+          </a>
+        </div>
+
+        <div class="site-footer__contact">
+          <h3 class="site-footer__heading">Contact</h3>
+          <ul>
+            <li><a href="tel:+15035550142" data-bind="contact.phone" data-bind-href="contact.phoneHref">+1 (503) 555-0142</a></li>
+            <li><a href="mailto:reservations@aurelia.example" data-bind="contact.email" data-bind-href="contact.emailHref">reservations@aurelia.example</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="site-footer__heading">Hours</h3>
+          <ul class="hours-compact" data-render="hours-compact"><!--r--><li><span class="hours-compact__day">Monday</span> <span class="hours-compact__time">Closed</span></li><li><span class="hours-compact__day">Tuesday – Thursday</span> <span class="hours-compact__time">5:30 – 10:30 pm</span></li><li><span class="hours-compact__day">Friday &amp; Saturday</span> <span class="hours-compact__time">5:30 – 11:30 pm</span></li><li><span class="hours-compact__day">Sunday</span> <span class="hours-compact__time">5 – 10 pm</span></li><!--/r--></ul>
+        </div>
+      </div>
+
+      <div class="site-footer__bottom">
+        <p>© <span data-bind="$year">2026</span> <span data-bind="$fullName">Aurelia Dining</span>. <span data-bind="footer.credit">Website template by TokaMD.</span></p>
+        <p class="site-footer__note" data-bind="footer.note">Demo content: all names, contact details, prices, reviews and people shown are fictional placeholders.</p>
+        <a class="back-to-top" href="#top">Back to top <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-arrow-right"></use></svg></a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

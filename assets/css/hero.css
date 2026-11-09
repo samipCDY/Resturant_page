@@ -265,3 +265,30 @@
     padding-right: 3rem;
   }
 }
+
+/* ---- Inner-page hero (about, menu, chef, …) --------------------------------
+   Same image/overlay/entrance system as the home hero, shorter and with a
+   smaller headline. Opt in with class="hero hero--page".                    */
+.hero--page {
+  min-height: clamp(30rem, 72svh, 46rem);
+  padding-bottom: clamp(3rem, 7vh, 5rem);
+}
+
+.hero--page .hero__content {
+  gap: var(--space-4);
+}
+
+.hero--page .hero__title {
+  max-width: 16ch;
+  font-size: clamp(2.5rem, 1.55rem + 4.4vw, 5.5rem);
+}
+
+.hero--page .hero__lead {
+  max-width: 38rem;
+}
+
+@media (max-width: 47.99em) {
+  .hero--page {
+    min-height: clamp(28rem, 78svh, 40rem);
+  }
+}

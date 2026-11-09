@@ -288,7 +288,8 @@ main:focus {
   text-decoration: none;
   line-height: 1.2;
   text-align: center;
-  white-space: nowrap;
+  white-space: normal;          /* single line at normal sizes; wraps only when space runs out (large text) */
+  overflow-wrap: anywhere;
   transition:
     color var(--dur-base) var(--ease-out),
     border-color var(--dur-base) var(--ease-out),
@@ -380,4 +381,32 @@ main:focus {
     transform: none;
     transition-delay: 0ms;
   }
+}
+
+/* ---- Large text settings: long single words may break instead of overflowing.
+   No visible effect at normal sizes (words only break when they cannot fit). */
+h1,
+h2,
+h3,
+.eyebrow,
+.breadcrumb li,
+.hero__title .line__inner {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.eyebrow {
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.hero__title .line__inner {
+  max-width: 100%;
+}
+
+/* Long unbreakable strings (email addresses, URLs) may wrap anywhere. */
+a[href^="mailto:"],
+a[href^="tel:"],
+address {
+  overflow-wrap: anywhere;
 }

@@ -1,18 +1,24 @@
 /*!
  * Aurelia Dining — components/nav.js
- * Header scroll states, accessible mobile menu, scrollspy.
+ * Fixed header, accessible mobile menu, current-page marking.
+ *
+ * Header behaviour (same on every page):
+ *  - always fixed and visible at the top of the viewport while scrolling;
+ *  - transparent over the hero, then a solid blurred bar once the page has
+ *    scrolled past SOLID_AFTER px (is-scrolled).
  */
 (function (A) {
   "use strict";
 
   var utils = A.utils;
   var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
+  var SOLID_AFTER = 24;     // px scrolled before the header gets its solid background
 
   function isVisible(el) {
     return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
   }
 
-  function init() {
+  function init(content) {
     var header = utils.qs("[data-header]");
     if (!header) return;
 
@@ -20,9 +26,15 @@
     var menu = utils.qs("[data-mobile-menu]");
     var root = document.documentElement;
     var desktop = window.matchMedia("(min-width: 64em)");
+    var page = document.body.getAttribute("data-page") || "";
     var isOpen = false;
-    var lastY = window.scrollY;
-    var holdVisibleUntil = 0;
+
+    /* ---- Current page: the header CTA (nav links are marked by the renderer) */
+    var ctaPage = utils.get(content, "navCta.page");
+    utils.qsa("[data-nav-cta]").forEach(function (cta) {
+      if (ctaPage && ctaPage === page) cta.setAttribute("aria-current", "page");
+      else cta.removeAttribute("aria-current");
+    });
 
     /* ---- Mobile menu ------------------------------------------------------- */
     function backgroundRegions() {
@@ -45,7 +57,6 @@
       });
 
       if (open) {
-        header.classList.remove("is-hidden");
         var first = utils.qs(FOCUSABLE, menu);
         if (first) first.focus({ preventScroll: true });
       } else if (opts.restoreFocus !== false) {
@@ -77,9 +88,7 @@
       });
 
       menu.addEventListener("click", function (event) {
-        var link = event.target.closest("a[href]");
-        if (!link) return;
-        holdVisibleUntil = performance.now() + 1500;
+        if (!event.target.closest("a[href]")) return;
         // Close before the browser follows the link so scrolling is unlocked.
         setOpen(false, { restoreFocus: false });
       });
@@ -108,71 +117,17 @@
     header.addEventListener("click", function (event) {
       var link = event.target.closest("a[href]");
       if (!link) return;
-      if ((link.getAttribute("href") || "").charAt(0) === "#") holdVisibleUntil = performance.now() + 1500;
       if (isOpen) setOpen(false, { restoreFocus: false });
     });
 
-    /* ---- Header on scroll: solid background + hide on scroll down --------- */
-
-    header.addEventListener("focusin", function () {
-      header.classList.remove("is-hidden");
-    });
-
+    /* ---- Solid background once scrolled (the header never hides) ---------- */
     var onScroll = utils.rafThrottle(function () {
-      var y = window.scrollY;
-      header.classList.toggle("is-scrolled", y > 24);
-
-      var delta = y - lastY;
-      if (Math.abs(delta) < 6) return;
-      lastY = y;
-
-      if (isOpen || header.contains(document.activeElement) || performance.now() < holdVisibleUntil) {
-        header.classList.remove("is-hidden");
-        return;
-      }
-      if (delta > 0 && y > window.innerHeight * 0.6) header.classList.add("is-hidden");
-      else if (delta < 0) header.classList.remove("is-hidden");
+      header.classList.toggle("is-scrolled", window.scrollY > SOLID_AFTER);
     });
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    header.classList.toggle("is-scrolled", window.scrollY > 24);
-
-    /* ---- Scrollspy ----------------------------------------------------------- */
-    var links = utils.qsa("[data-nav-link]");
-    if (!links.length || !("IntersectionObserver" in window)) return;
-
-    var sections = [];
-    links.forEach(function (link) {
-      var id = (link.getAttribute("href") || "").replace(/^#/, "");
-      var section = id && document.getElementById(id);
-      if (section && sections.indexOf(section) === -1) sections.push(section);
-    });
-
-    function setCurrent(id) {
-      links.forEach(function (link) {
-        var on = link.getAttribute("href") === "#" + id;
-        link.classList.toggle("is-active", on);
-        if (on) link.setAttribute("aria-current", "location");
-        else link.removeAttribute("aria-current");
-      });
-    }
-
-    var spy = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) setCurrent(entry.target.id);
-      });
-    }, { rootMargin: "-45% 0px -50% 0px" });
-
-    sections.forEach(function (section) { spy.observe(section); });
-
-    // Clear the highlight while the hero is in view.
-    var top = document.getElementById("top");
-    if (top) {
-      new IntersectionObserver(function (entries) {
-        if (entries[0].isIntersecting) setCurrent("");
-      }, { rootMargin: "-45% 0px -50% 0px" }).observe(top);
-    }
+    header.classList.toggle("is-scrolled", window.scrollY > SOLID_AFTER);
   }
 
   A.nav = { init: init };
-})(window.Aurelia = window.Aurelia || {});
+})(typeof window !== "undefined" ? (window.Aurelia = window.Aurelia || {}) : (globalThis.Aurelia = globalThis.Aurelia || {}));

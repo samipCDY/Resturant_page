@@ -45,8 +45,9 @@
   --rot: 0deg;
   --focal: 90deg;
   --plate-ratio: 0.24;
-  --plate: calc(var(--plate-ratio) * 100cqi);
-  --radius: calc(50cqi - var(--plate) * 0.62);
+  --cq: 1cqi;                     /* 1% of the stage; fixed-size fallback below */
+  --plate: calc(var(--plate-ratio) * 100 * var(--cq));
+  --radius: calc(50 * var(--cq) - var(--plate) * 0.62);
 
   grid-area: stage;
   justify-self: center;
@@ -63,6 +64,24 @@
 @media (min-width: 40em) {
   .dish-wheel__stage {
     width: min(100%, 32rem);
+  }
+}
+
+/* Browsers without container query units (pre-2023): give the stage an
+   explicit size and derive 1% of it from that. */
+@supports not (width: 1cqi) {
+  .dish-wheel__stage {
+    --stage-size: min(26rem, calc(100vw - 2 * var(--gutter)));
+    --cq: calc(var(--stage-size) / 100);
+    width: var(--stage-size);
+  }
+
+  @media (min-width: 40em) {
+    .dish-wheel__stage { --stage-size: 32rem; }
+  }
+
+  @media (min-width: 60em) {
+    .dish-wheel__stage { --stage-size: min(38rem, calc(48vw - 0.6rem)); }
   }
 }
 
@@ -232,7 +251,7 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  width: calc(100cqi - var(--plate) * 2.55);
+  width: calc(100 * var(--cq) - var(--plate) * 2.55);
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
   display: grid;
@@ -248,7 +267,7 @@
 }
 
 .dish-wheel__hub-label {
-  font-size: max(9px, 2.3cqi);
+  font-size: max(9px, calc(2.3 * var(--cq)));
   font-weight: 600;
   letter-spacing: 0.32em;
   text-transform: uppercase;
@@ -258,7 +277,7 @@
 
 .dish-wheel__hub-num {
   font-family: var(--font-display);
-  font-size: 13cqi;
+  font-size: calc(13 * var(--cq));
   font-weight: 400;
   line-height: 1;
   color: var(--color-accent);

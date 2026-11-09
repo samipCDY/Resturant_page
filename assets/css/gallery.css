@@ -1,0 +1,296 @@
+/* ==========================================================================
+   Aurelia Dining — Gallery grid + lightbox (gallery.html)
+   ========================================================================== */
+
+.gallery {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.gallery__item {
+  aspect-ratio: 4 / 3;
+}
+
+@media (min-width: 40em) {
+  .gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: clamp(12rem, 22vw, 17rem);
+    grid-auto-flow: dense;
+  }
+
+  .gallery__item {
+    aspect-ratio: auto;
+  }
+
+  .gallery__item--wide {
+    grid-column: span 2;
+  }
+
+  .gallery__item--tall {
+    grid-row: span 2;
+  }
+}
+
+@media (min-width: 60em) {
+  .gallery {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: clamp(13rem, 18vw, 17rem);
+  }
+}
+
+.gallery__thumb {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: var(--color-surface);
+  text-align: left;
+}
+
+button.gallery__thumb {
+  cursor: zoom-in;
+}
+
+.gallery__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.88);
+  transition:
+    transform var(--dur-xslow) var(--ease-out),
+    filter var(--dur-slow) var(--ease-out);
+}
+
+.gallery__caption {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 2.75rem var(--space-4) var(--space-4);
+  background: linear-gradient(transparent, rgb(var(--rgb-ink) / 0.88));
+  font-size: var(--fs-sm);
+  color: var(--color-heading);
+  transition:
+    opacity var(--dur-base) var(--ease-out),
+    transform var(--dur-slow) var(--ease-out);
+}
+
+@media (hover: hover) {
+  button.gallery__thumb .gallery__caption {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+
+  button.gallery__thumb:hover .gallery__caption,
+  button.gallery__thumb:focus-visible .gallery__caption {
+    opacity: 1;
+    transform: none;
+  }
+
+  button.gallery__thumb:hover img,
+  button.gallery__thumb:focus-visible img {
+    transform: scale(1.05);
+    filter: none;
+  }
+}
+
+button.gallery__thumb:focus-visible {
+  outline-offset: -4px;
+  border-radius: 0;
+}
+
+/* ---- Lightbox ------------------------------------------------------------------ */
+html.is-lightbox-open {
+  overflow: hidden;
+}
+
+.lightbox {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: rgb(var(--rgb-ink) / 0.97);
+  color: var(--color-text);
+}
+
+.lightbox::backdrop {
+  background: rgb(0 0 0 / 0.6);
+}
+
+.lightbox[open] {
+  display: grid;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lightbox[open] {
+    animation: lightbox-in var(--dur-base) var(--ease-out);
+  }
+
+  .lightbox[open] .lightbox__img {
+    animation: lightbox-zoom var(--dur-slow) var(--ease-out);
+  }
+}
+
+@keyframes lightbox-in {
+  from { opacity: 0; }
+}
+
+@keyframes lightbox-zoom {
+  from { transform: scale(0.97); }
+}
+
+.lightbox__inner {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  width: 100%;
+  height: 100%;
+  padding: var(--space-3) var(--gutter) var(--space-4);
+}
+
+.lightbox__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.lightbox__count {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.lightbox__figure {
+  position: relative;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  min-height: 0;
+  margin: 0;
+  touch-action: pan-y;
+}
+
+.lightbox__frame {
+  display: grid;
+  place-items: center;
+  min-height: 0;
+}
+
+.lightbox__img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transition: opacity var(--dur-base) var(--ease-out);
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+.lightbox__figure.is-loading .lightbox__img {
+  opacity: 0.25;
+}
+
+.lightbox__error {
+  display: none;
+  color: var(--color-text-muted);
+}
+
+.lightbox__figure.is-error .lightbox__img {
+  display: none;
+}
+
+.lightbox__figure.is-error .lightbox__error {
+  display: block;
+}
+
+.lightbox__caption {
+  min-height: 1.5em;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  color: var(--color-heading);
+}
+
+.lightbox__controls {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.lightbox__btn {
+  display: inline-grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  padding: 0;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+  background: rgb(var(--rgb-ink) / 0.6);
+  color: var(--color-heading);
+  transition:
+    color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out);
+}
+
+.lightbox__btn:hover {
+  border-color: var(--color-accent);
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.lightbox__btn:focus-visible {
+  border-radius: 50%;
+}
+
+/* Wide screens: arrows sit beside the photo */
+@media (min-width: 48em) {
+  .lightbox__inner {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr);
+    column-gap: var(--space-5);
+  }
+
+  .lightbox__bar {
+    grid-column: 1 / -1;
+  }
+
+  .lightbox__controls {
+    display: contents;
+  }
+
+  .lightbox__prev {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: center;
+  }
+
+  .lightbox__figure {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .lightbox__next {
+    grid-column: 3;
+    grid-row: 2;
+    align-self: center;
+  }
+}
+
+/* Gallery without a working lightbox (very old browsers): plain images */
+.gallery.no-lightbox button.gallery__thumb {
+  cursor: default;
+}
