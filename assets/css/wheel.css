@@ -1,0 +1,616 @@
+/* ==========================================================================
+   Aurelia Dining — Signature dish wheel
+   --------------------------------------------------------------------------
+   Geometry (see docs/ARCHITECTURE.md §6):
+     --n       dish count (set by wheel.js)
+     --step    360deg / n
+     --rot     cumulative rotation, set by wheel.js (turn × step)
+     --focal   where the active plate sits: 90deg = bottom, 180deg = left
+   The stage is a size container, so cqi units scale everything with it.
+   ========================================================================== */
+
+.wheel-section {
+  overflow: hidden;
+  background:
+    radial-gradient(60% 55% at 78% 50%, rgb(var(--rgb-gold) / 0.07), transparent 70%),
+    var(--color-bg-alt);
+}
+
+.dish-wheel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "header"
+    "stage"
+    "panels"
+    "controls";
+  gap: clamp(2rem, 1.4rem + 3vw, 3.5rem);
+}
+
+.dish-wheel__header {
+  grid-area: header;
+  display: grid;
+  gap: var(--space-4);
+  max-width: 34rem;
+}
+
+.dish-wheel__intro {
+  color: var(--color-text-muted);
+}
+
+/* ---- Stage -------------------------------------------------------------------- */
+.dish-wheel__stage {
+  --n: 7;
+  --step: calc(360deg / var(--n));
+  --rot: 0deg;
+  --focal: 90deg;
+  --plate-ratio: 0.24;
+  --plate: calc(var(--plate-ratio) * 100cqi);
+  --radius: calc(50cqi - var(--plate) * 0.62);
+
+  grid-area: stage;
+  justify-self: center;
+  position: relative;
+  width: min(100%, 26rem);
+  aspect-ratio: 1;
+  container-type: inline-size;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (min-width: 40em) {
+  .dish-wheel__stage {
+    width: min(100%, 32rem);
+  }
+}
+
+/* Soft spotlight under the active (focal) position */
+.dish-wheel__glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, rgb(var(--rgb-ink) / 0.9) 0 18%, transparent 48%),
+    radial-gradient(circle at 50% 50%, rgb(var(--rgb-gold) / 0.06), transparent 70%);
+  pointer-events: none;
+}
+
+.dish-wheel__spot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--plate) * 2.1);
+  aspect-ratio: 1;
+  margin: calc(var(--plate) * -1.05) 0 0 calc(var(--plate) * -1.05);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(var(--rgb-gold) / 0.18), transparent 65%);
+  transform: rotate(var(--focal)) translateX(var(--radius));
+  pointer-events: none;
+}
+
+/* ---- Rotating track --------------------------------------------------------- */
+.dish-wheel__track {
+  position: absolute;
+  inset: 0;
+  transform: rotate(calc(var(--focal) + var(--rot)));
+  transition: transform var(--dur-wheel) var(--ease-wheel);
+}
+
+/* Fine graduation ring on the outer edge */
+.dish-wheel__ticks {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgb(var(--rgb-gold) / 0.4) 0 0.3deg, transparent 0.3deg 4deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
+  opacity: 0.8;
+}
+
+/* Orbit line through the plate centres */
+.dish-wheel__orbit {
+  position: absolute;
+  inset: calc(var(--plate) * 0.62);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+}
+
+.dish-wheel__orbit::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--plate) * 0.55);
+  border: 1px dashed rgb(var(--rgb-gold) / 0.18);
+  border-radius: 50%;
+}
+
+/* ---- Items & plates ------------------------------------------------------------ */
+.dish-wheel__item {
+  --a: calc(var(--i) * var(--step) * -1);
+
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--plate);
+  height: var(--plate);
+  margin: calc(var(--plate) / -2) 0 0 calc(var(--plate) / -2);
+  /* place on the circle, then cancel the track's rotation so photos stay upright */
+  transform:
+    rotate(var(--a))
+    translateX(var(--radius))
+    rotate(calc(-1 * (var(--a) + var(--focal) + var(--rot))));
+  transition: transform var(--dur-wheel) var(--ease-wheel);
+}
+
+.dish-wheel__plate {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  background:
+    radial-gradient(circle at 35% 30%, var(--c-charcoal-600), var(--c-charcoal-850) 70%);
+  box-shadow: var(--shadow-plate);
+  opacity: 0.5;
+  filter: saturate(0.6) brightness(0.75);
+  transform: scale(0.72);
+  transition:
+    transform var(--dur-wheel) var(--ease-wheel),
+    opacity var(--dur-slow) var(--ease-out),
+    filter var(--dur-slow) var(--ease-out),
+    box-shadow var(--dur-slow) var(--ease-out);
+}
+
+.dish-wheel__plate img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-out);
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+.dish-wheel__plate.is-loaded img {
+  opacity: 1;
+}
+
+/* Broken / missing image: show the monogram letter instead */
+.dish-wheel__plate.is-error::after {
+  content: attr(data-initial);
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: calc(var(--plate) * 0.38);
+  color: var(--color-accent);
+}
+
+.dish-wheel__item.is-near .dish-wheel__plate {
+  opacity: 0.78;
+  filter: saturate(0.8) brightness(0.88);
+  transform: scale(0.8);
+}
+
+.dish-wheel__item.is-active .dish-wheel__plate {
+  opacity: 1;
+  filter: none;
+  transform: scale(1.2);
+  box-shadow:
+    0 0 0 3px var(--color-bg-alt),
+    0 0 0 4px var(--color-accent),
+    0 28px 50px -18px rgb(0 0 0 / 0.9);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dish-wheel__item:not(.is-active):hover .dish-wheel__plate {
+    opacity: 1;
+    filter: saturate(0.95) brightness(1);
+    transform: scale(0.88);
+  }
+}
+
+.dish-wheel__item.is-active .dish-wheel__plate {
+  cursor: default;
+}
+
+/* Drag: follow the pointer 1:1 (no easing) */
+.dish-wheel__stage.is-dragging .dish-wheel__track,
+.dish-wheel__stage.is-dragging .dish-wheel__item {
+  transition: none;
+}
+
+.dish-wheel__stage.is-dragging .dish-wheel__plate {
+  cursor: grabbing;
+}
+
+/* ---- Hub ------------------------------------------------------------------------ */
+.dish-wheel__hub {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(100cqi - var(--plate) * 2.55);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.15em;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: radial-gradient(circle at 50% 35%, var(--c-charcoal-800), var(--c-charcoal-950) 75%);
+  box-shadow: inset 0 0 0 calc(var(--plate) * 0.06) rgb(var(--rgb-ink) / 0.6), var(--shadow-soft);
+  text-align: center;
+  pointer-events: none;
+}
+
+.dish-wheel__hub-label {
+  font-size: max(9px, 2.3cqi);
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+  padding-left: 0.32em;
+}
+
+.dish-wheel__hub-num {
+  font-family: var(--font-display);
+  font-size: 13cqi;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--color-accent);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* ---- Panels (stacked in one grid cell: height = tallest dish, no layout jump) */
+.dish-wheel__panels {
+  grid-area: panels;
+  display: grid;
+}
+
+.dish-panel {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  visibility: hidden;
+  transition: visibility 0s linear var(--dur-base);
+}
+
+.dish-panel.is-active {
+  visibility: visible;
+  transition: none;
+}
+
+/* Panels are focusable (tabindex=0) per the WAI-ARIA tabs pattern */
+.dish-panel:focus-visible {
+  outline-offset: 0.75rem;
+}
+
+.dish-panel > * {
+  opacity: 0;
+  transform: translate3d(0, calc(var(--motion-shift) * 0.6), 0);
+  transition:
+    opacity var(--dur-fast) ease,
+    transform var(--dur-base) var(--ease-out);
+}
+
+.dish-panel.is-active > * {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--dur-slow) var(--ease-out),
+    transform var(--dur-xslow) var(--ease-out);
+  transition-delay: calc(var(--d, 0) * 70ms + 160ms);
+}
+
+.dish-panel > :nth-child(1) { --d: 0; }
+.dish-panel > :nth-child(2) { --d: 1; }
+.dish-panel > :nth-child(3) { --d: 2; }
+.dish-panel > :nth-child(4) { --d: 3; }
+.dish-panel > :nth-child(5) { --d: 4; }
+
+.dish-panel__count {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  color: var(--color-text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.dish-panel__count strong {
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.dish-panel__name {
+  font-size: var(--fs-2xl);
+  font-weight: 500;
+  line-height: 1.08;
+}
+
+.dish-panel__desc {
+  max-width: 32rem;
+  color: var(--color-text-muted);
+}
+
+.dish-panel__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: 0;
+  list-style: none;
+}
+
+.dish-panel__tags li {
+  padding: 0.3rem 0.75rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.dish-panel__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.dish-panel__price {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--color-accent);
+}
+
+.dish-panel__pairing {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+
+.dish-panel__pairing span {
+  display: block;
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+
+/* ---- Controls --------------------------------------------------------------- */
+.dish-wheel__controls {
+  grid-area: controls;
+  display: grid;
+  gap: var(--space-5);
+}
+
+.dish-wheel__buttons {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.wheel-btn {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  padding: 0;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-heading);
+  transition:
+    color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.wheel-btn:hover {
+  border-color: var(--color-accent);
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.wheel-btn:active {
+  transform: scale(0.94);
+}
+
+.wheel-btn:focus-visible {
+  outline-offset: 4px;
+  border-radius: 50%;
+}
+
+.wheel-btn--play {
+  margin-right: auto;
+}
+
+.wheel-btn--play .icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.wheel-btn--play[data-state="playing"] .icon-play,
+.wheel-btn--play[data-state="paused"] .icon-pause {
+  display: none;
+}
+
+/* Autoplay progress ring */
+.wheel-btn__ring {
+  position: absolute;
+  inset: -1px;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  transform: rotate(-90deg);
+  pointer-events: none;
+  overflow: visible;
+}
+
+.wheel-btn__ring circle {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  opacity: 0;
+}
+
+/* The fill itself is driven by the Web Animations API in wheel.js */
+.dish-wheel.is-autoplaying .wheel-btn__ring circle {
+  opacity: 1;
+}
+
+/* Numbered tabs */
+.dish-wheel__tabs {
+  display: flex;
+  gap: 0;
+  width: 100%;
+  max-width: 28rem;
+}
+
+.wheel-tab {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 4rem;
+  min-height: 2.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: 0 var(--space-1) 0 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-subtle);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+  transition: color var(--dur-base) var(--ease-out);
+}
+
+.wheel-tab::after {
+  content: "";
+  display: block;
+  height: 1px;
+  background: var(--color-border-strong);
+  transform-origin: 0 50%;
+  transition:
+    background-color var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out);
+}
+
+.wheel-tab:hover {
+  color: var(--color-text);
+}
+
+.wheel-tab:hover::after {
+  background: var(--color-text-muted);
+}
+
+.wheel-tab[aria-selected="true"] {
+  color: var(--color-accent);
+}
+
+.wheel-tab[aria-selected="true"]::after {
+  background: var(--color-accent);
+  transform: scaleY(2);
+}
+
+/* ---- Desktop: details left, wheel right -------------------------------------- */
+@media (min-width: 60em) {
+  .dish-wheel {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "header   stage"
+      "panels   stage"
+      "controls stage";
+    column-gap: clamp(2.5rem, 5vw, 5rem);
+    row-gap: var(--space-6);
+    align-items: start;
+  }
+
+  .dish-wheel__stage {
+    --focal: 180deg;
+    width: min(100%, 38rem);
+    align-self: center;
+    justify-self: end;
+  }
+}
+
+/* ---- States ----------------------------------------------------------------------
+   wheel.js adds .is-ready to .dish-wheel only after a successful start.
+   1. Booting: reserve the space (no layout shift) but show nothing clickable.
+   2. Failed: JS off, content.js broken/empty, or wheel.js missing/threw. The
+      page has booted (html.is-ready, set by main.js or the 3s failsafe) but the
+      wheel never became ready, so swap the UI for a plain message + menu link. */
+.dish-wheel:not(.is-ready) .dish-wheel__stage,
+.dish-wheel:not(.is-ready) .dish-wheel__controls {
+  visibility: hidden;
+}
+
+.no-js .dish-wheel__stage,
+.no-js .dish-wheel__panels,
+.no-js .dish-wheel__controls,
+.is-ready .dish-wheel:not(.is-ready) .dish-wheel__stage,
+.is-ready .dish-wheel:not(.is-ready) .dish-wheel__panels,
+.is-ready .dish-wheel:not(.is-ready) .dish-wheel__controls {
+  display: none;
+}
+
+.dish-wheel__fallback {
+  display: none;
+  grid-area: panels;
+  max-width: 34rem;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+}
+
+.no-js .dish-wheel__fallback,
+.is-ready .dish-wheel:not(.is-ready) .dish-wheel__fallback {
+  display: block;
+}
+
+.dish-wheel__fallback a {
+  color: var(--color-accent);
+}
+
+.dish-wheel.is-single .dish-wheel__controls {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dish-panel > *,
+  .dish-panel.is-active > * {
+    transition-delay: 0ms;
+  }
+}
+
+@media (forced-colors: active) {
+  .dish-wheel__item.is-active .dish-wheel__plate {
+    outline: 3px solid CanvasText;
+    outline-offset: 3px;
+  }
+
+  .wheel-tab[aria-selected="true"]::after {
+    background: Highlight;
+  }
+}

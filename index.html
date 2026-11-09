@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aurelia Dining — Modern European Restaurant</title>
+  <meta name="description" content="Aurelia Dining is a modern European restaurant serving seasonal tasting menus, open-fire signature plates and an intimate candlelit dining room.">
+  <meta name="theme-color" content="#141312">
+  <meta name="color-scheme" content="dark">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Aurelia Dining — Modern European Restaurant">
+  <meta property="og:description" content="Seasonal tasting menus, open-fire cooking and a candlelit room on the river.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;w=1200&amp;h=630&amp;q=70">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+
+  <!-- Flag JS early (no flash of un-animated content). Failsafe: reveal the hero after 3s even if main.js never runs. -->
+  <script>
+    (function (d) { d.className = d.className.replace(/\bno-js\b/, "js"); setTimeout(function () { d.classList.add("is-ready"); }, 3000); })(document.documentElement);
+  </script>
+
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Manrope:wght@400;500;600&amp;display=swap">
+
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/nav.css">
+  <link rel="stylesheet" href="assets/css/hero.css">
+  <link rel="stylesheet" href="assets/css/wheel.css">
+  <link rel="stylesheet" href="assets/css/sections.css">
+
+  <!-- Content first, then helpers, components, and boot. All deferred: order is preserved, rendering is never blocked. -->
+  <script src="assets/js/content.js" defer></script>
+  <script src="assets/js/core/utils.js" defer></script>
+  <script src="assets/js/core/bind.js" defer></script>
+  <script src="assets/js/core/reveal.js" defer></script>
+  <script src="assets/js/components/nav.js" defer></script>
+  <script src="assets/js/components/hero.js" defer></script>
+  <script src="assets/js/components/wheel.js" defer></script>
+  <script src="assets/js/main.js" defer></script>
+</head>
+<body>
+  <!-- SVG sprite: original icons for this template -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="icon-monogram" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="22.5" fill="none" stroke="currentColor" stroke-width="1"/>
+      <circle cx="24" cy="24" r="19" fill="none" stroke="currentColor" stroke-width="0.6" opacity=".5"/>
+      <path d="M15.5 34 24 12.5 32.5 34M18.6 26.5h10.8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="m24 5.5 1.2 1.2L24 7.9l-1.2-1.2z" fill="currentColor"/>
+    </symbol>
+    <symbol id="icon-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+    <symbol id="icon-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+    <symbol id="icon-pause" viewBox="0 0 24 24"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></symbol>
+  </svg>
+
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- ===================================================== Header -->
+  <header class="site-header" data-header>
+    <div class="site-header__inner container">
+      <a class="brand" href="#top">
+        <svg class="brand__mark" aria-hidden="true" focusable="false"><use href="#icon-monogram"></use></svg>
+        <span class="brand__text">
+          <span class="brand__name" data-bind="brand.name">Aurelia</span>
+          <span class="brand__descriptor" data-bind="brand.descriptor">Dining</span>
+        </span>
+      </a>
+
+      <nav class="site-nav" aria-label="Primary">
+        <ul class="site-nav__list" role="list" data-render="nav" data-variant="desktop">
+          <li><a class="site-nav__link" href="#about" data-nav-link>About</a></li>
+          <li><a class="site-nav__link" href="#signature" data-nav-link>Signature</a></li>
+          <li><a class="site-nav__link" href="#menu" data-nav-link>Menu</a></li>
+          <li><a class="site-nav__link" href="#chef" data-nav-link>Chef</a></li>
+          <li><a class="site-nav__link" href="#gallery" data-nav-link>Gallery</a></li>
+          <li><a class="site-nav__link" href="#contact" data-nav-link>Contact</a></li>
+        </ul>
+      </nav>
+
+      <a class="btn btn--primary btn--sm site-header__cta" href="#reservations" data-bind="navCta.label" data-bind-href="navCta.href">Reserve</a>
+
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" data-nav-toggle>
+        <span class="visually-hidden">Menu</span>
+        <span class="nav-toggle__bars" aria-hidden="true"><span></span><span></span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile menu: sibling of the header (not inside it) so position:fixed is relative to the viewport -->
+  <div class="mobile-menu" id="mobile-menu" data-mobile-menu>
+    <nav aria-label="Mobile">
+      <ul class="mobile-menu__list" role="list" data-render="nav" data-variant="mobile">
+        <li class="mobile-menu__item" style="--i:0"><a class="mobile-menu__link" href="#about" data-nav-link><span class="mobile-menu__num" aria-hidden="true">01</span><span>About</span></a></li>
+        <li class="mobile-menu__item" style="--i:1"><a class="mobile-menu__link" href="#signature" data-nav-link><span class="mobile-menu__num" aria-hidden="true">02</span><span>Signature</span></a></li>
+        <li class="mobile-menu__item" style="--i:2"><a class="mobile-menu__link" href="#menu" data-nav-link><span class="mobile-menu__num" aria-hidden="true">03</span><span>Menu</span></a></li>
+        <li class="mobile-menu__item" style="--i:3"><a class="mobile-menu__link" href="#chef" data-nav-link><span class="mobile-menu__num" aria-hidden="true">04</span><span>Chef</span></a></li>
+        <li class="mobile-menu__item" style="--i:4"><a class="mobile-menu__link" href="#gallery" data-nav-link><span class="mobile-menu__num" aria-hidden="true">05</span><span>Gallery</span></a></li>
+        <li class="mobile-menu__item" style="--i:5"><a class="mobile-menu__link" href="#contact" data-nav-link><span class="mobile-menu__num" aria-hidden="true">06</span><span>Contact</span></a></li>
+      </ul>
+    </nav>
+    <div class="mobile-menu__footer">
+      <dl class="mobile-menu__details">
+        <div>
+          <dt>Reservations</dt>
+          <dd><a href="tel:+15550142290" data-bind="contact.phone" data-bind-href="contact.phoneHref">+1 (555) 014-2290</a></dd>
+        </div>
+        <div>
+          <dt>Dinner</dt>
+          <dd data-bind="hours.summary">Tue – Sun · 5:30 – 11 pm</dd>
+        </div>
+      </dl>
+      <a class="btn btn--primary" href="#reservations" data-bind-href="navCta.href">Reserve a table</a>
+    </div>
+  </div>
+
+  <main id="main" tabindex="-1">
+    <!-- ===================================================== 1. Hero -->
+    <section class="hero" id="top" aria-labelledby="hero-title" data-hero>
+      <div class="hero__media" data-hero-media>
+        <img class="hero__img"
+             src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;w=1600&amp;q=70"
+             srcset="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;w=640&amp;q=70 640w,
+                     https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;w=960&amp;q=70 960w,
+                     https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;w=1280&amp;q=70 1280w,
+                     https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;w=1600&amp;q=70 1600w,
+                     https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&amp;fit=crop&amp;w=2200&amp;q=65 2200w"
+             sizes="100vw"
+             width="1600" height="1067"
+             alt=""
+             fetchpriority="high">
+      </div>
+      <div class="hero__overlay" aria-hidden="true"></div>
+
+      <div class="hero__content container">
+        <p class="eyebrow" data-hero-fade style="--d:0" data-bind="hero.eyebrow">Modern European · Est. 2014</p>
+        <h1 class="hero__title" id="hero-title" data-hero-title>
+          <span class="line"><span class="line__inner" style="--i:0">Where every</span></span>
+          <span class="line"><span class="line__inner" style="--i:1"><em>plate</em> tells</span></span>
+          <span class="line"><span class="line__inner" style="--i:2">a quiet story.</span></span>
+        </h1>
+        <p class="hero__lead" data-hero-fade style="--d:1" data-bind="hero.lead">Seasonal tasting menus, open-fire cooking and a candlelit room on the river. An evening at Aurelia moves at the pace of good conversation.</p>
+        <div class="hero__actions" data-hero-fade style="--d:2">
+          <a class="btn btn--primary" href="#reservations" data-bind-href="hero.primaryCta.href">
+            <span data-bind="hero.primaryCta.label">Reserve a table</span>
+            <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-arrow-right"></use></svg>
+          </a>
+          <a class="btn btn--ghost" href="#menu" data-bind-href="hero.secondaryCta.href">
+            <span data-bind="hero.secondaryCta.label">Explore the menu</span>
+          </a>
+        </div>
+        <dl class="hero__meta" data-hero-fade style="--d:3" data-hero-meta>
+          <div class="hero__meta-item"><dt>Dinner</dt><dd>Tue – Sun · 5:30 – 11 pm</dd></div>
+          <div class="hero__meta-item"><dt>Kitchen</dt><dd>Seasonal tasting &amp; à la carte</dd></div>
+          <div class="hero__meta-item"><dt>Find us</dt><dd>218 Linden Row, Portland</dd></div>
+        </dl>
+      </div>
+
+      <a class="hero__scroll" href="#signature" data-hero-fade style="--d:4">
+        <span>Scroll</span>
+        <span class="hero__scroll-line" aria-hidden="true"></span>
+      </a>
+    </section>
+
+    <!-- ===================================================== 2. Signature dish wheel -->
+    <section class="section wheel-section" id="signature" aria-labelledby="wheel-title">
+      <div class="container">
+        <div class="dish-wheel" id="signature-wheel" data-wheel role="group" aria-roledescription="carousel" aria-label="Signature dishes">
+          <header class="dish-wheel__header">
+            <p class="eyebrow" data-reveal><span class="eyebrow__num">01</span> <span data-bind="wheel.eyebrow">The Signature Wheel</span></p>
+            <h2 class="section-title" id="wheel-title" data-reveal style="--reveal-delay:1" data-bind-html="wheel.title">Seven plates, <em>one table</em>.</h2>
+            <p class="dish-wheel__intro" data-reveal style="--reveal-delay:2" data-bind="wheel.intro">Turn the wheel through the dishes our guests return for. Each is built around a single peak-season ingredient and finished at the pass by our head chef.</p>
+          </header>
+
+          <div class="dish-wheel__stage" data-wheel-stage data-reveal="zoom">
+            <div class="dish-wheel__glow" aria-hidden="true"></div>
+            <div class="dish-wheel__spot" aria-hidden="true"></div>
+            <div class="dish-wheel__track" data-wheel-track aria-hidden="true">
+              <div class="dish-wheel__ticks"></div>
+              <div class="dish-wheel__orbit"></div>
+              <!-- plates rendered by wheel.js from content.js -->
+            </div>
+            <div class="dish-wheel__hub" aria-hidden="true">
+              <span class="dish-wheel__hub-label">No.</span>
+              <span class="dish-wheel__hub-num" data-wheel-hub>01</span>
+            </div>
+          </div>
+
+          <div class="dish-wheel__controls" data-reveal style="--reveal-delay:2">
+            <div class="dish-wheel__buttons">
+              <button class="wheel-btn wheel-btn--play" type="button" data-wheel-play data-state="paused" aria-label="Start automatic rotation" hidden>
+                <svg class="wheel-btn__ring" viewBox="0 0 52 52" aria-hidden="true" focusable="false"><circle cx="26" cy="26" r="25.25" pathLength="100"/></svg>
+                <svg class="icon icon--fill icon-pause" aria-hidden="true" focusable="false"><use href="#icon-pause"></use></svg>
+                <svg class="icon icon--fill icon-play" aria-hidden="true" focusable="false"><use href="#icon-play"></use></svg>
+              </button>
+              <button class="wheel-btn" type="button" data-wheel-prev aria-label="Previous dish">
+                <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-arrow-left"></use></svg>
+              </button>
+              <button class="wheel-btn" type="button" data-wheel-next aria-label="Next dish">
+                <svg class="icon" aria-hidden="true" focusable="false"><use href="#icon-arrow-right"></use></svg>
+              </button>
+            </div>
+            <div class="dish-wheel__tabs" role="tablist" aria-label="Choose a dish" data-wheel-tabs></div>
+          </div>
+
+          <!-- Panels follow the tablist in DOM order (keyboard: tabs → Tab → active panel).
+               Visual order is set by grid-template-areas in wheel.css. -->
+          <div class="dish-wheel__panels" data-wheel-panels>
+            <!-- tab panels rendered by wheel.js -->
+          </div>
+
+          <p class="visually-hidden" aria-live="polite" aria-atomic="true" data-wheel-live></p>
+
+          <!-- Shown when JavaScript is off, content.js has an error, or the wheel failed to start -->
+          <p class="dish-wheel__fallback" data-wheel-fallback>The signature dishes can't be shown right now. You can still <a href="#menu">browse the full menu</a>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================== Phase 3 placeholders
+         Real anchors so navigation works now; full designs arrive in Phase 3. -->
+    <section class="section section-stub" id="about" aria-labelledby="about-title">
+      <div class="container section-stub__inner">
+        <p class="eyebrow"><span class="eyebrow__num">02</span> Our Story</p>
+        <h2 class="section-title" id="about-title">A small room with a <em>long table</em>.</h2>
+        <p class="section-stub__note">About section — designed in Phase 3.</p>
+      </div>
+    </section>
+
+    <section class="section section--alt section-stub" id="dishes" aria-labelledby="dishes-title">
+      <div class="container section-stub__inner">
+        <p class="eyebrow"><span class="eyebrow__num">03</span> Signature Dishes</p>
+        <h2 class="section-title" id="dishes-title">From the <em>pass</em>.</h2>
+        <p class="section-stub__note">Signature dish cards — designed in Phase 3.</p>
+      </div>
+    </section>
+
+    <section class="section section-stub" id="menu" aria-labelledby="menu-title">
+      <div class="container section-stub__inner">
+        <p class="eyebrow"><span class="eyebrow__num">04</span> The Menu</p>
+        <h2 class="section-title" id="menu-title">Tonight’s <em>menu</em>.</h2>
+        <p class="section-stub__note">Interactive menu — designed in Phase 3.</p>
+      </div>
+    </section>
+
+    <section class="section section--alt section-stub" id="chef" aria-labelledby="chef-title">
+      <div class="container section-stub__inner">
+        <p class="eyebrow"><span class="eyebrow__num">05</span> The Chef</p>
+        <h2 class="section-title" id="chef-title">Cooking with <em>fire &amp; patience</em>.</h2>
+        <p class="section-stub__note">Chef story — designed in Phase 3.</p>
+      </div>
+    </section>
+
+    <section class="section section-stub" id="experience" aria-labelledby="experience-title">
+      <div class="container section-stub__inner">
+        <p class="eyebrow"><span class="eyebrow__num">06</span> The Experience</p>
+        <h2 class="section-title" id="experience-title">An evening, <em>unhurried</em>.</h2>
+        <p class="section-stub__note">Dining experience — designed in Phase 3.</p>
+      </div>
+    </section>
+
+    <section class="section section--alt section-stub" id="gallery" aria-labelledby="gallery-title">
+      <div class="container section-stub__inner">
+        <p class="eyebrow"><span class="eyebrow__num">07</span> Gallery</p>
+        <h2 class="section-title" id="gallery-title">Moments at <em>Aurelia</em>.</h2>
+        <p class="section-stub__note">Photo gallery — designed in Phase 3.</p>
+      </div>
+    </section>
+
+    <section class="section section-stub" id="testimonials" aria-labelledby="testimonials-title">
+      <div class="container section-stub__inner">
+        <p class="eyebrow"><span class="eyebrow__num">08</span> Kind Words</p>
+        <h2 class="section-title" id="testimonials-title">From our <em>guests</em>.</h2>
+        <p class="section-stub__note">Sample testimonials — designed in Phase 3.</p>
+      </div>
+    </section>
+
+    <section class="section section--alt section-stub" id="reservations" aria-labelledby="reservations-title">
+      <div class="container section-stub__inner">
+        <p class="eyebrow"><span class="eyebrow__num">09</span> Reservations</p>
+        <h2 class="section-title" id="reservations-title">Reserve your <em>table</em>.</h2>
+        <p class="section-stub__note">
+          Reservation inquiry form — built in Phase 3/4. Until then, call
+          <a href="tel:+15550142290" data-bind="contact.phone" data-bind-href="contact.phoneHref">+1 (555) 014-2290</a>.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================================================== Footer / Contact -->
+  <footer class="site-footer" id="contact" aria-labelledby="footer-title">
+    <div class="container">
+      <h2 class="visually-hidden" id="footer-title">Contact</h2>
+      <div class="site-footer__grid">
+        <div class="site-footer__brand">
+          <a class="brand" href="#top">
+            <svg class="brand__mark" aria-hidden="true" focusable="false"><use href="#icon-monogram"></use></svg>
+            <span class="brand__text">
+              <span class="brand__name" data-bind="brand.name">Aurelia</span>
+              <span class="brand__descriptor" data-bind="brand.descriptor">Dining</span>
+            </span>
+          </a>
+          <p data-bind="brand.tagline">Modern European kitchen</p>
+        </div>
+        <address>
+          <span data-bind="contact.address.line1">218 Linden Row</span><br>
+          <span data-bind="contact.address.line2">Riverside District, Portland, OR 97204</span>
+        </address>
+        <p>
+          <a href="tel:+15550142290" data-bind="contact.phone" data-bind-href="contact.phoneHref">+1 (555) 014-2290</a><br>
+          <a href="mailto:reservations@aurelia.example" data-bind="contact.email" data-bind-href="contact.emailHref">reservations@aurelia.example</a>
+        </p>
+      </div>
+      <p class="site-footer__legal">
+        © <span data-year>2026</span> <span data-bind="brand.name">Aurelia</span> <span data-bind="brand.descriptor">Dining</span>. Website template by TokaMD.
+        Sample content: names, addresses and photography are placeholders.
+      </p>
+    </div>
+  </footer>
+</body>
+</html>

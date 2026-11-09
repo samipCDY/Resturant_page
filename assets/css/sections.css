@@ -1,0 +1,65 @@
+/* ==========================================================================
+   Aurelia Dining — Content sections & footer
+   --------------------------------------------------------------------------
+   Phase 2 ships lightweight placeholders so every navigation anchor already
+   lands somewhere real. Phase 3 replaces them with the full designs.
+   ========================================================================== */
+
+.section-stub__inner {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.section-stub__note {
+  max-width: 36rem;
+  padding: var(--space-5);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  color: var(--color-text-subtle);
+}
+
+/* ---- Footer (minimal until Phase 3) ------------------------------------------ */
+.site-footer {
+  padding-block: var(--space-8) var(--space-6);
+  background: var(--color-bg-deep);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+
+.site-footer__grid {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.site-footer__brand {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.site-footer address {
+  font-style: normal;
+}
+
+.site-footer a {
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  color: var(--color-accent);
+}
+
+.site-footer__legal {
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--fs-xs);
+  color: var(--color-text-subtle);
+}
+
+@media (min-width: 48em) {
+  .site-footer__grid {
+    grid-template-columns: 1.4fr 1fr 1fr;
+  }
+}

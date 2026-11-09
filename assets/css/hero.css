@@ -1,0 +1,267 @@
+/* ==========================================================================
+   Aurelia Dining — Hero
+   ========================================================================== */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  align-items: end;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-block: calc(var(--nav-height) + var(--space-7)) clamp(3rem, 8vh, 5.5rem);
+  background-color: var(--color-bg-deep);
+}
+
+/* ---- Media ------------------------------------------------------------------ */
+.hero__media {
+  position: absolute;
+  inset: -8% 0 0;
+  z-index: -2;
+  will-change: transform;
+}
+
+.hero__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 55% 45%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .js .hero__img {
+    transform: scale(1.14);
+    transition: transform 2.8s var(--ease-out);
+  }
+
+  .js.is-ready .hero__img {
+    transform: scale(1.02);
+  }
+}
+
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg,
+      rgb(var(--rgb-ink) / 0.72) 0%,
+      rgb(var(--rgb-ink) / 0.28) 26%,
+      rgb(var(--rgb-ink) / 0.45) 55%,
+      rgb(var(--rgb-ink) / 0.92) 86%,
+      var(--color-bg) 100%),
+    linear-gradient(90deg, rgb(var(--rgb-ink) / 0.7) 0%, rgb(var(--rgb-ink) / 0.35) 45%, transparent 72%),
+    radial-gradient(90% 70% at 10% 90%, rgb(var(--rgb-ink) / 0.75), transparent 70%);
+}
+
+/* Narrow screens: copy covers most of the photo, so darken it more evenly */
+@media (max-width: 47.99em) {
+  .hero__overlay {
+    background:
+      linear-gradient(180deg,
+        rgb(var(--rgb-ink) / 0.75) 0%,
+        rgb(var(--rgb-ink) / 0.6) 30%,
+        rgb(var(--rgb-ink) / 0.78) 60%,
+        rgb(var(--rgb-ink) / 0.94) 85%,
+        var(--color-bg) 100%);
+  }
+}
+
+/* ---- Content ---------------------------------------------------------------- */
+.hero__content {
+  position: relative;
+  display: grid;
+  gap: var(--space-5);
+}
+
+.hero__title {
+  max-width: 13ch;
+  font-size: var(--fs-display);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -0.015em;
+  text-wrap: initial;
+}
+
+.hero__title em {
+  font-style: italic;
+}
+
+/* Each line is masked; the inner span rises into view */
+.hero__title .line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.hero__title .line__inner {
+  display: inline-block;
+}
+
+.js .hero__title .line__inner {
+  transform: translate3d(0, 108%, 0);
+  transition: transform var(--dur-xslow) var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 120ms + 150ms);
+}
+
+.js.is-ready .hero__title .line__inner {
+  transform: none;
+}
+
+/* Supporting copy fades up after the headline */
+.js [data-hero-fade] {
+  opacity: 0;
+  transform: translate3d(0, var(--motion-shift), 0);
+  transition:
+    opacity var(--dur-slow) var(--ease-out),
+    transform var(--dur-xslow) var(--ease-out);
+  transition-delay: calc(var(--d, 0) * 110ms + 650ms);
+}
+
+.js.is-ready [data-hero-fade] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .hero__title .line__inner {
+    transform: none;
+    opacity: 0;
+    transition: opacity var(--dur-slow) ease;
+    transition-delay: 0ms;
+  }
+
+  .js.is-ready .hero__title .line__inner {
+    opacity: 1;
+  }
+
+  .js [data-hero-fade] {
+    transition-delay: 150ms;
+  }
+}
+
+.hero__lead {
+  max-width: 34rem;
+  font-size: var(--fs-lg);
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+@media (max-width: 29.99em) {
+  .hero__actions .btn {
+    flex: 1 1 100%;
+  }
+}
+
+/* ---- Meta strip ------------------------------------------------------------- */
+.hero__meta {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+.hero__meta-item {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.hero__meta dt {
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.hero__meta dd {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--color-text);
+}
+
+@media (min-width: 40em) {
+  .hero__meta {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+
+  .hero__meta-item + .hero__meta-item {
+    padding-left: var(--space-5);
+    border-left: 1px solid var(--color-border);
+  }
+}
+
+/* ---- Scroll cue -------------------------------------------------------------- */
+.hero__scroll {
+  display: none;
+}
+
+@media (min-width: 48em) {
+  .hero__scroll {
+    position: absolute;
+    right: var(--gutter);
+    bottom: clamp(3rem, 8vh, 5.5rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    font-size: var(--fs-2xs);
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--color-text-muted);
+    writing-mode: vertical-rl;
+    transition: color var(--dur-base) var(--ease-out);
+  }
+
+  .hero__scroll:hover {
+    color: var(--color-accent);
+  }
+
+  .hero__scroll-line {
+    position: relative;
+    width: 1px;
+    height: 4.5rem;
+    overflow: hidden;
+    background: var(--color-border-strong);
+  }
+
+  .hero__scroll-line::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--color-accent);
+    transform: translateY(-100%);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__scroll-line::after {
+      animation: hero-scroll-line 2.4s var(--ease-in-out) infinite;
+    }
+  }
+}
+
+@keyframes hero-scroll-line {
+  0% { transform: translateY(-100%); }
+  55% { transform: translateY(0); }
+  100% { transform: translateY(100%); }
+}
+
+/* Leave room so the meta strip never collides with the scroll cue */
+@media (min-width: 48em) {
+  .hero__content {
+    padding-right: 3rem;
+  }
+}

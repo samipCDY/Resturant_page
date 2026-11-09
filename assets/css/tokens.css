@@ -1,0 +1,129 @@
+/* ==========================================================================
+   Aurelia Dining — Design tokens
+   --------------------------------------------------------------------------
+   Change the brand here. Components only reference the SEMANTIC tokens
+   (--color-*, --font-*, --fs-*, --space-*, --dur-*), never raw palette values.
+   ========================================================================== */
+
+:root {
+  /* ---- Raw palette ------------------------------------------------------ */
+  --c-charcoal-950: #0d0c0b;
+  --c-charcoal-900: #141312;
+  --c-charcoal-850: #191817;
+  --c-charcoal-800: #201e1c;
+  --c-charcoal-700: #2a2725;
+  --c-charcoal-600: #393532;
+
+  --c-cream-50: #fbf7f0;
+  --c-cream-100: #f2ebdd;
+  --c-cream-200: #e4d9c4;
+  --c-cream-400: #b7ac98;
+  --c-cream-500: #918876;
+
+  --c-gold-300: #e0c590;
+  --c-gold-400: #c9a66b;
+  --c-gold-500: #b08d55;
+  --c-gold-600: #8c6d3d;
+
+  /* RGB channels for translucent mixes: rgb(var(--rgb-gold) / .2) */
+  --rgb-charcoal: 20 19 18;
+  --rgb-ink: 13 12 11;
+  --rgb-cream: 242 235 221;
+  --rgb-gold: 201 166 107;
+
+  /* ---- Semantic colours -------------------------------------------------- */
+  --color-bg: var(--c-charcoal-900);
+  --color-bg-alt: var(--c-charcoal-850);
+  --color-bg-deep: var(--c-charcoal-950);
+  --color-surface: var(--c-charcoal-800);
+  --color-surface-raised: var(--c-charcoal-700);
+
+  --color-text: var(--c-cream-100);
+  --color-text-muted: var(--c-cream-400);
+  --color-text-subtle: var(--c-cream-500);
+  --color-heading: var(--c-cream-50);
+
+  --color-accent: var(--c-gold-400);
+  --color-accent-strong: var(--c-gold-300);
+  --color-accent-soft: rgb(var(--rgb-gold) / 0.12);
+  --color-on-accent: var(--c-charcoal-950);
+
+  --color-border: rgb(var(--rgb-cream) / 0.12);
+  --color-border-strong: rgb(var(--rgb-cream) / 0.24);
+  --color-focus: var(--c-gold-300);
+
+  /* ---- Typography -------------------------------------------------------- */
+  --font-display: "Cormorant Garamond", "Cormorant", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-body: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Fluid scale: 320px → 1440px */
+  --fs-2xs: 0.6875rem;                                        /* 11px  */
+  --fs-xs: clamp(0.75rem, 0.73rem + 0.09vw, 0.8125rem);       /* 12–13 */
+  --fs-sm: clamp(0.875rem, 0.85rem + 0.12vw, 0.9375rem);      /* 14–15 */
+  --fs-base: clamp(1rem, 0.96rem + 0.18vw, 1.0625rem);        /* 16–17 */
+  --fs-lg: clamp(1.125rem, 1.05rem + 0.36vw, 1.375rem);       /* 18–22 */
+  --fs-xl: clamp(1.5rem, 1.33rem + 0.8vw, 2.125rem);          /* 24–34 */
+  --fs-2xl: clamp(1.875rem, 1.55rem + 1.6vw, 3rem);           /* 30–48 */
+  --fs-3xl: clamp(2.25rem, 1.66rem + 2.95vw, 4.25rem);        /* 36–68 */
+  --fs-display: clamp(2.625rem, 1.48rem + 5.7vw, 6.625rem);   /* 42–106 */
+
+  --lh-tight: 1.02;
+  --lh-snug: 1.2;
+  --lh-body: 1.7;
+
+  --tracking-label: 0.18em;
+  --tracking-eyebrow: 0.28em;
+
+  /* ---- Space & layout ---------------------------------------------------- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  --gutter: clamp(1rem, 0.6rem + 2vw, 2.5rem);   /* exactly 16px at 320px */
+  --container: 76rem;
+  --container-narrow: 46rem;
+  --section-pad: clamp(4.5rem, 3rem + 7vw, 9rem);
+  --nav-height: 4.5rem;
+
+  /* ---- Shape & depth ----------------------------------------------------- */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-pill: 999px;
+  --shadow-soft: 0 24px 48px -24px rgb(0 0 0 / 0.7);
+  --shadow-plate: 0 18px 36px -14px rgb(0 0 0 / 0.75), inset 0 0 0 1px rgb(var(--rgb-cream) / 0.06);
+
+  /* ---- Motion ------------------------------------------------------------ */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-wheel: cubic-bezier(0.65, 0.05, 0.25, 1);
+
+  --dur-fast: 200ms;
+  --dur-base: 450ms;
+  --dur-slow: 900ms;
+  --dur-xslow: 1300ms;
+  --dur-wheel: 1100ms;
+
+  --motion-shift: 1.5rem;     /* distance used by entrance / reveal animations */
+
+  /* ---- Layers ------------------------------------------------------------ */
+  --z-base: 1;
+  --z-header: 100;
+  --z-menu: 90;
+  --z-skip: 200;
+}
+
+/* Reduced motion: keep gentle fades, remove travel, rotation and long durations */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-slow: 250ms;
+    --dur-xslow: 250ms;
+    --dur-wheel: 1ms;
+    --motion-shift: 0px;
+  }
+}

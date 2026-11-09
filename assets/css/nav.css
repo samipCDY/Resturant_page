@@ -1,0 +1,407 @@
+/* ==========================================================================
+   Aurelia Dining — Header, desktop navigation, mobile menu
+   ========================================================================== */
+
+.site-header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: var(--z-header);
+  height: var(--nav-height);
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    transform var(--dur-slow) var(--ease-out);
+}
+
+.site-header.is-scrolled {
+  background-color: rgb(var(--rgb-charcoal) / 0.86);
+  border-bottom-color: var(--color-border);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+}
+
+.site-header.is-hidden {
+  transform: translateY(-100%);
+}
+
+.site-header.is-menu-open {
+  background-color: transparent;
+  border-bottom-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  transform: none;
+}
+
+.site-header__inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+/* ---- Brand ------------------------------------------------------------------ */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-right: auto;
+  text-decoration: none;
+  color: var(--color-heading);
+  min-height: 2.75rem;
+}
+
+.brand__mark {
+  width: 2.25rem;
+  height: 2.25rem;
+  color: var(--color-accent);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.brand:hover .brand__mark {
+  transform: rotate(-12deg);
+}
+
+.brand__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.brand__name {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.brand__descriptor {
+  margin-top: 0.3rem;
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+/* ---- Desktop navigation ---------------------------------------------------- */
+.site-nav {
+  display: none;
+}
+
+.site-nav__list {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.25rem, 2.2vw, 2.25rem);
+}
+
+.site-nav__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-text-muted);
+  transition: color var(--dur-base) var(--ease-out);
+}
+
+.site-nav__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.55rem;
+  height: 1px;
+  background: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: 100% 50%;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.site-nav__link:hover,
+.site-nav__link.is-active {
+  color: var(--color-heading);
+}
+
+.site-nav__link:hover::after,
+.site-nav__link.is-active::after {
+  transform: scaleX(1);
+  transform-origin: 0 50%;
+}
+
+.site-header__cta {
+  display: none;
+}
+
+@media (min-width: 30em) {
+  .site-header__cta {
+    display: inline-flex;
+  }
+}
+
+@media (min-width: 64em) {
+  .site-nav {
+    display: block;
+  }
+}
+
+/* ---- Menu toggle (hamburger) -------------------------------------------- */
+.nav-toggle {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-right: calc(var(--space-2) * -1);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-heading);
+}
+
+.nav-toggle__bars {
+  position: relative;
+  width: 1.5rem;
+  height: 0.625rem;
+}
+
+.nav-toggle__bars span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background: currentColor;
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    width var(--dur-base) var(--ease-out),
+    top var(--dur-base) var(--ease-out);
+}
+
+.nav-toggle__bars span:first-child {
+  top: 0;
+}
+
+.nav-toggle__bars span:last-child {
+  top: calc(100% - 1.5px);
+  width: 66%;
+  right: 0;
+  left: auto;
+}
+
+.nav-toggle:hover .nav-toggle__bars span:last-child {
+  width: 100%;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle__bars span:first-child {
+  top: calc(50% - 0.75px);
+  transform: rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle__bars span:last-child {
+  top: calc(50% - 0.75px);
+  width: 100%;
+  transform: rotate(-45deg);
+}
+
+@media (min-width: 64em) {
+  .nav-toggle {
+    display: none;
+  }
+}
+
+/* ---- Mobile menu (full-screen overlay) ------------------------------------- */
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-menu);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+  padding: calc(var(--nav-height) + var(--space-6)) var(--gutter) var(--space-6);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background:
+    radial-gradient(120% 60% at 100% 0%, rgb(var(--rgb-gold) / 0.08), transparent 60%),
+    var(--color-bg-deep);
+  visibility: hidden;
+  clip-path: inset(0 0 100% 0);
+  transition:
+    clip-path var(--dur-slow) var(--ease-in-out),
+    visibility 0s linear var(--dur-slow);
+}
+
+.mobile-menu.is-open {
+  visibility: visible;
+  clip-path: inset(0 0 0 0);
+  transition: clip-path var(--dur-slow) var(--ease-in-out);
+}
+
+.mobile-menu__list {
+  display: grid;
+  gap: var(--space-1);
+  counter-reset: menu;
+}
+
+.mobile-menu__link {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  padding-block: var(--space-2);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 1.5rem + 3vw, 3rem);
+  line-height: 1.15;
+  color: var(--color-heading);
+  text-decoration: none;
+  transition: color var(--dur-base) var(--ease-out);
+}
+
+.mobile-menu__link:hover,
+.mobile-menu__link.is-active {
+  color: var(--color-accent);
+}
+
+.mobile-menu__num {
+  font-family: var(--font-body);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--color-accent);
+  transform: translateY(-0.9em);
+}
+
+.mobile-menu__item,
+.mobile-menu__footer {
+  opacity: 0;
+  transform: translate3d(0, var(--motion-shift), 0);
+  transition:
+    opacity var(--dur-base) var(--ease-out),
+    transform var(--dur-slow) var(--ease-out);
+}
+
+.mobile-menu.is-open .mobile-menu__item,
+.mobile-menu.is-open .mobile-menu__footer {
+  opacity: 1;
+  transform: none;
+  transition-delay: calc(var(--i, 0) * 55ms + 220ms);
+}
+
+.mobile-menu__footer {
+  --i: 8;
+  margin-top: auto;
+  display: grid;
+  gap: var(--space-5);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+}
+
+.mobile-menu__details {
+  display: grid;
+  gap: var(--space-4);
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+
+.mobile-menu__details dt {
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+
+.mobile-menu__details a {
+  text-decoration: none;
+}
+
+.mobile-menu__details a:hover {
+  color: var(--color-accent);
+}
+
+.mobile-menu .btn {
+  justify-self: start;
+}
+
+@media (min-width: 40em) {
+  .mobile-menu__details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64em) {
+  .mobile-menu {
+    display: none;
+  }
+}
+
+/* ---- Fallback: show the link list inline on small screens -----------------
+   Applies with JavaScript off (.no-js) AND when nav.js failed to start
+   (page booted/failsafe fired, but nav.js never added .has-nav), so a dead
+   hamburger is never left on screen.                                         */
+.no-js .nav-toggle,
+.no-js .mobile-menu,
+.is-ready:not(.has-nav) .nav-toggle,
+.is-ready:not(.has-nav) .mobile-menu {
+  display: none;
+}
+
+@media (max-width: 63.99em) {
+  .no-js .site-header,
+  .is-ready:not(.has-nav) .site-header {
+    position: absolute;
+    height: auto;
+    padding-block: var(--space-3);
+  }
+
+  .no-js .site-header__inner,
+  .is-ready:not(.has-nav) .site-header__inner {
+    flex-wrap: wrap;
+  }
+
+  .no-js .site-nav,
+  .is-ready:not(.has-nav) .site-nav {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .no-js .site-nav__list,
+  .is-ready:not(.has-nav) .site-nav__list {
+    gap: var(--space-5);
+  }
+}
+
+/* ---- Reduced motion: no wipes, slides or rotation; keep short fades ------- */
+@media (prefers-reduced-motion: reduce) {
+  .site-header {
+    transition:
+      background-color var(--dur-base) var(--ease-out),
+      border-color var(--dur-base) var(--ease-out);
+  }
+
+  .brand:hover .brand__mark {
+    transform: none;
+  }
+
+  .mobile-menu {
+    clip-path: none;
+    opacity: 0;
+    transition:
+      opacity var(--dur-fast) ease,
+      visibility 0s linear var(--dur-fast);
+  }
+
+  .mobile-menu.is-open {
+    clip-path: none;
+    opacity: 1;
+    transition: opacity var(--dur-fast) ease;
+  }
+
+  .mobile-menu.is-open .mobile-menu__item,
+  .mobile-menu.is-open .mobile-menu__footer {
+    transition-delay: 0ms;
+  }
+}
